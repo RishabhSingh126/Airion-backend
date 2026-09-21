@@ -4,28 +4,62 @@ import { Check, Star, Calendar, Users, ArrowRight, Phone, Loader, Crown, AlertCi
 import SEO from '../components/SEO';
 import FallingPetals from '../components/FallingPetals';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { api } from '../lib/api';
 
 const Packages: React.FC = () => {
   const navigate = useNavigate();
 
   const { data: packages = [], isLoading, isError } = useQuery({
-    queryKey: ['services-as-packages'], // Changed queryKey to bust the previous cache
+    queryKey: ['packages'],
     queryFn: async () => {
-      const res = await api.get('/services');
-      // Safely extract the array whether it's wrapped in data, success wraps, or directly returned
-      let services = [];
+      const res = await api.get('/packages');
+      let pkgs = [];
       if (Array.isArray(res)) {
-        services = res;
+        pkgs = res;
       } else if (res && Array.isArray(res.data)) {
-        services = res.data;
+        pkgs = res.data;
       } else if (res && res.data && Array.isArray(res.data.data)) {
-        services = res.data.data;
+        pkgs = res.data.data;
       }
-      return services;
+      return pkgs;
     },
   });
+
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedPackage, setSelectedPackage] = React.useState<any>(null);
+  const [formData, setFormData] = React.useState({
+      customerName: '',
+      customerEmail: '',
+      customerPhone: '',
+      eventDate: '',
+      message: ''
+  });
+
+  const submitInquiryMutation = useMutation({
+      mutationFn: async () => {
+          await api.post(`/packages/${selectedPackage.id}/inquire`, formData);
+      },
+      onSuccess: () => {
+          toast.success('Inquiry submitted successfully! We will get back to you soon.');
+          setIsModalOpen(false);
+          setFormData({ customerName: '', customerEmail: '', customerPhone: '', eventDate: '', message: '' });
+      },
+      onError: () => {
+          toast.error('Failed to submit inquiry. Please try again.');
+      }
+  });
+
+  const handleInquire = (e: React.FormEvent) => {
+      e.preventDefault();
+      submitInquiryMutation.mutate();
+  };
+
+  const openInquiryModal = (pkg: any) => {
+      setSelectedPackage(pkg);
+      setIsModalOpen(true);
+  };
 
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300 overflow-x-hidden">
@@ -106,7 +140,7 @@ const Packages: React.FC = () => {
                     )}
                     {/* Badge */}
                     <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest z-10 shadow-lg">
-                      {pkg.vendor?.businessName || 'Premium Vendor'}
+                      {pkg.category?.name || 'Exclusive'}
                     </div>
                   </div>
 
@@ -123,32 +157,12 @@ const Packages: React.FC = () => {
                     {pkg.description && (
                       <p className="text-sm text-gray-600 dark:text-slate-400 mb-6 line-clamp-2">
                         {pkg.description}
-                        <span onClick={() => {
-                            const name = pkg.title || pkg.name || 'package';
-                            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                            const vendorName = pkg.vendor?.businessName || 'vendor';
-                            const vendorSlug = vendorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                            const vendorId = pkg.vendorId || pkg.vendor?.id;
-                            navigate(`/vendor/${vendorSlug}-${vendorId}?package=${slug}`);
-                        }} className="text-red-500 font-bold cursor-pointer hover:underline ml-2">
-                          see more...
-                        </span>
-                      </p>
-                    )}
-
                     <div className="mt-auto">
                       <button
-                        onClick={() => {
-                            const name = pkg.title || pkg.name || 'package';
-                            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                            const vendorName = pkg.vendor?.businessName || 'vendor';
-                            const vendorSlug = vendorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                            const vendorId = pkg.vendorId || pkg.vendor?.id;
-                            navigate(`/vendor/${vendorSlug}-${vendorId}?package=${slug}`);
-                        }}
+                        onClick={() => openInquiryModal(pkg)}
                         className="w-full py-4 rounded-2xl font-black text-sm tracking-widest bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-red-600 dark:hover:bg-red-500 dark:hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
                       >
-                        View Package <ArrowRight size={16} />
+                        Inquire Now <ArrowRight size={16} />
                       </button>
                     </div>
                   </div>
@@ -190,6 +204,54 @@ const Packages: React.FC = () => {
           </div>
         </motion.div>
       </section>
+
+      {/* Inquiry Modal */}
+      {isModalOpen && selectedPackage && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-slate-900 rounded-[32px] w-full max-w-lg p-8 relative shadow-2xl">
+                  <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-gray-500 hover:text-red-500">
+                      <AlertCircle size={24} className="rotate-45" /> {/* Using alert circle as X for now */}
+                  </button>
+                  <h3 className="text-2xl font-black mb-2 text-gray-900 dark:text-white">Inquire about {selectedPackage.title}</h3>
+                  <p className="text-gray-500 mb-6">Fill out the details below and we will get back to you with the best available vendors.</p>
+
+                  <form onSubmit={handleInquire} className="space-y-4">
+                      <input 
+                          type="text" required placeholder="Your Name" 
+                          value={formData.customerName} onChange={e => setFormData({...formData, customerName: e.target.value})}
+                          className="w-full bg-gray-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 dark:text-white"
+                      />
+                      <input 
+                          type="email" required placeholder="Email Address" 
+                          value={formData.customerEmail} onChange={e => setFormData({...formData, customerEmail: e.target.value})}
+                          className="w-full bg-gray-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 dark:text-white"
+                      />
+                      <input 
+                          type="tel" required placeholder="Phone Number" 
+                          value={formData.customerPhone} onChange={e => setFormData({...formData, customerPhone: e.target.value})}
+                          className="w-full bg-gray-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 dark:text-white"
+                      />
+                      <input 
+                          type="date" placeholder="Event Date (Optional)" 
+                          value={formData.eventDate} onChange={e => setFormData({...formData, eventDate: e.target.value})}
+                          className="w-full bg-gray-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 dark:text-white"
+                      />
+                      <textarea 
+                          placeholder="Additional Requirements (Optional)" rows={3}
+                          value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}
+                          className="w-full bg-gray-100 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 dark:text-white"
+                      />
+                      
+                      <button 
+                          type="submit" disabled={submitInquiryMutation.isPending}
+                          className="w-full py-4 bg-red-500 text-white rounded-xl font-bold mt-4 hover:bg-red-600 transition-colors disabled:opacity-50"
+                      >
+                          {submitInquiryMutation.isPending ? 'Submitting...' : 'Submit Inquiry'}
+                      </button>
+                  </form>
+              </div>
+          </div>
+      )}
     </main>
   );
 };

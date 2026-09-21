@@ -18,11 +18,13 @@ import VendorSignupForm from './pages/VendorSignup';
 import Bookings from './pages/Bookings';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
-
 import EventPlanning from './pages/EventPlanning';
 import Promotions from './pages/Promotions';
 import Calendar from './pages/Calendar';
 import Earnings from './pages/Earnings';
+import PackageInquiries from './pages/PackageInquiries';
+import Earnings from './pages/Earnings';
+import PackageInquiries from './pages/PackageInquiries';
 import Services from './pages/Services';
 import Reviews from './pages/Reviews';
 import Gallery from './pages/Gallery';
@@ -59,6 +61,7 @@ const App: React.FC = () => {
                   <Route index element={<Dashboard />} />
                   <Route path="events" element={<Listings />} />
                   <Route path="enquiries" element={<Inbox />} />
+                  <Route path="package-inquiries" element={<PackageInquiries />} />
                   <Route path="bookings" element={<Bookings />} />
                   <Route path="shop-items" element={<ShopItems />} />
                   <Route path="shop/orders" element={<MerchandiseOrders />} />

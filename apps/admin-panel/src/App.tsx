@@ -25,6 +25,7 @@ import ShopAdmin from './pages/Shop';
 import ShopOrders from './pages/ShopOrders';
 import Refunds from './pages/Refunds';
 import CMS from './pages/CMS';
+import Packages from './pages/Packages';
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950">
@@ -64,6 +65,7 @@ const App: React.FC = () => {
                   <Route path="refunds" element={<Refunds />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="cms" element={<CMS />} />
+                  <Route path="packages" element={<Packages />} />
                   <Route path="*" element={<div className="p-8 text-[var(--ease2event-text-primary)] font-medium">Page not found</div>} />
                 </Route>
               </Routes>

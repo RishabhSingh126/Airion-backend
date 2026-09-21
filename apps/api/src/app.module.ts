@@ -37,6 +37,7 @@ import { CronModule } from './cron/cron.module';
 import { HealthModule } from './health/health.module';
 import { CartModule } from './cart/cart.module';
 import { CmsModule } from './cms/cms.module';
+import { PackagesModule } from './packages/packages.module';
 
 @Module({
     imports: [
@@ -147,6 +148,7 @@ import { CmsModule } from './cms/cms.module';
         HealthModule,
         CartModule,
         CmsModule,
+        PackagesModule,
     ],
     controllers: [AppController],
 })

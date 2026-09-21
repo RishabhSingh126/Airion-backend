@@ -33,6 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
  { icon: CalendarDays, label: 'Calendar', path: '/calendar' },
  { icon: DollarSign, label: 'Earnings', path: '/earnings' },
  { icon: MessageSquare, label: 'Enquiries', path: '/enquiries' },
+ { icon: Package, label: 'Assigned Inquiries', path: '/package-inquiries' },
  { icon: ShoppingBag, label: 'Event Shop', path: '/shop-items' },
  { icon: ShoppingBag, label: 'Shop Orders', path: '/shop/orders' },
  { icon: Megaphone, label: 'Promotions', path: '/promotions' },
