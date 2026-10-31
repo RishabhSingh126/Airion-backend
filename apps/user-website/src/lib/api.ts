@@ -27,6 +27,8 @@ const mapServiceToEvent = (service: any): Event => {
                 features: pkg.features || [],
             }))
             : undefined,
+        isSponsored: !!(service.isSponsored || service.vendor?.isSponsored),
+        isFeatured: !!(service.isFeatured || service.vendor?.isFeatured),
     };
 };
 
@@ -158,8 +160,21 @@ export const fetchEventById = async (id: string): Promise<Event | undefined> => 
     }
 };
 
-export const createBooking = async (data: any) => {
-    const res = await api.post('/bookings', data);
+export interface CreateBookingResponse {
+    success: boolean;
+    booking: {
+        id: string;
+        vendorId?: string;
+        userId?: string;
+        totalAmount?: number;
+        status?: string;
+        [key: string]: any;
+    };
+    message?: string;
+}
+
+export const createBooking = async (data: any): Promise<CreateBookingResponse> => {
+    const res: any = await api.post('/bookings', data);
     return res;
 };
 
@@ -168,11 +183,11 @@ export const fetchMyBookings = async () => {
     return Array.isArray(res) ? res : [];
 };
 
-export const createPaymentOrder = async (amount: number, bookingId: string) => {
-    return await api.post('/payments/create-order', { amount, bookingId });
+export const createPaymentOrder = async (amount: number, bookingId: string): Promise<any> => {
+    return (await api.post('/payments/create-order', { amount, bookingId })) as any;
 };
-export const verifyPayment = async (data: any, bookingId: string) => {
-    return await api.post('/payments/verify', { ...data, bookingId });
+export const verifyPayment = async (data: any, bookingId?: string): Promise<any> => {
+    return (await api.post('/payments/verify', { ...data, bookingId })) as any;
 };
 export const toggleWishlist = async (vId: string) => await api.post(`/wishlists/toggle/${vId}`);
 export const fetchMyWishlist = async () => await api.get('/wishlists/mine');
@@ -212,9 +227,21 @@ export const askSupportAI = async (message: string) => {
 };
 
 // --- Merchandise / Event Store API Endpoints ---
-export const fetchProducts = async () => await api.get('/merchandise');
-export const fetchProductById = async (id: string) => await api.get(`/merchandise/${id}`);
+export const fetchProducts = async () => {
+    const res: any = await api.get('/merchandise');
+    return res?.data ?? res;
+};
+export const fetchProductById = async (id: string) => {
+    const res: any = await api.get(`/merchandise/${id}`);
+    return res?.data ?? res;
+};
 export const checkoutMerchandise = async (orderData: any) => await api.post('/merchandise/checkout', orderData);
-export const toggleProductWishlist = async (id: string) => await api.post(`/merchandise/${id}/wishlist`);
-export const fetchProductWishlist = async () => await api.get('/merchandise/wishlist/mine');
+export const toggleProductWishlist = async (id: string): Promise<{ wishlisted: boolean }> => {
+    const res: any = await api.post(`/merchandise/${id}/wishlist`);
+    return res?.data ?? res;
+};
+export const fetchProductWishlist = async (): Promise<any[]> => {
+    const res: any = await api.get('/merchandise/wishlist/mine');
+    return res?.data ?? res;
+};
 

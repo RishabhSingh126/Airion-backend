@@ -23,6 +23,7 @@ export interface Event {
     amenities?: string[];
     packages?: EventPackage[];
     isSponsored?: boolean;
+    isFeatured?: boolean;
 }
 
 export interface Category {

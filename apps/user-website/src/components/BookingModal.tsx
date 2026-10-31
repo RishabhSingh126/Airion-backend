@@ -71,7 +71,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, eventName,
             prefill: {
                 name: user?.name || "",
                 email: user?.email || "",
-                contact: user?.phone || "",
+                contact: user?.phoneNumber || "",
             },
             theme: { color: "#ef4444" }
         };
@@ -95,7 +95,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, eventName,
                 const order = await createPaymentOrder(dynamicPrice, res.booking.id);
                 handlePayment(order, res.booking.id);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
             alert('Failed to initiate booking: ' + (error.response?.data?.message || error.message));
         } finally {
