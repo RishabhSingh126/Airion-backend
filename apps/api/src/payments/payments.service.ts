@@ -9,8 +9,8 @@ export class PaymentsService {
 
     constructor(private configService: ConfigService) {
         this.razorpay = new Razorpay({
-            key_id: this.configService.get<string>('RAZORPAY_KEY_ID') || 'dummy_key',
-            key_secret: this.configService.get<string>('RAZORPAY_KEY_SECRET') || 'dummy_secret',
+            key_id: this.configService.get<string>('RAZORPAY_KEY_ID') || 'rzp_live',
+            key_secret: this.configService.get<string>('RAZORPAY_KEY_SECRET') || 'secret',
         });
     }
 
@@ -44,7 +44,7 @@ export class PaymentsService {
     }
 
     verifySignature(razorpayOrderId: string, razorpayPaymentId: string, razorpaySignature: string): boolean {
-        const secret = this.configService.get<string>('RAZORPAY_KEY_SECRET') || 'dummy_secret';
+        const secret = this.configService.get<string>('RAZORPAY_KEY_SECRET') || '';
         const body = razorpayOrderId + '|' + razorpayPaymentId;
         const expectedSignature = crypto
             .createHmac('sha256', secret)

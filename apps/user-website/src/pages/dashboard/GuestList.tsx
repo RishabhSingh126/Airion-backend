@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, Mail, Phone, CheckCircle, Clock, XCircle, Edit2, Trash2, X, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -14,18 +14,25 @@ export interface Guest {
     status: StatusType;
 }
 
-const initialGuests: Guest[] = [
-    { id: '1', name: 'ghhjj', email: 'N/A', phone: '1234567890', group: 'Groom Side', status: 'Confirmed' },
-    { id: '2', name: 'Rohan Sharma', email: 'rohan@example.com', phone: '+91 98765 43210', group: 'Bride Side', status: 'Confirmed' },
-    { id: '3', name: 'Ananya Iyer', email: 'ananya@example.com', phone: '+91 87654 32109', group: 'Groom Side', status: 'Pending' },
-    { id: '4', name: 'Vikram Malhotra', email: 'vikram@example.com', phone: '+91 76543 21098', group: 'VVIP', status: 'Confirmed' },
-    { id: '5', name: 'Priya Verma', email: 'priya@example.com', phone: '+91 65432 10987', group: 'Friends', status: 'Declined' }
-];
-
 const FILTER_TABS = ['All', 'Bride Side', 'Groom Side', 'Friends', 'Family', 'VVIP'];
 
 export default function GuestList() {
-    const [guests, setGuests] = useState<Guest[]>(initialGuests);
+    const [guests, setGuests] = useState<Guest[]>(() => {
+        try {
+            const saved = localStorage.getItem('ease2event_guests');
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('ease2event_guests', JSON.stringify(guests));
+        } catch (e) {
+            console.error('Failed to save guests:', e);
+        }
+    }, [guests]);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilter, setActiveFilter] = useState('All');
     

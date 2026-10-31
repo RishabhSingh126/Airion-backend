@@ -43,7 +43,7 @@ export default function PremiumUpgrade() {
                 // Redirect to actual payment gateway if url is provided
                 window.location.href = data.url;
             } else if (data.success) {
-                // If mocked success or test mode
+                // If payment confirmed immediately
                 toast.success(data.message || 'Payment initiated successfully!');
                 // Refetch subscription state to reflect the change if the backend activated it immediately
                 await refetch();

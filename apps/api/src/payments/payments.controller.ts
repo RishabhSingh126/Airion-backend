@@ -43,7 +43,7 @@ export class PaymentsController {
             throw new BadRequestException('Webhook signature is missing');
         }
 
-        const secret = process.env.RAZORPAY_WEBHOOK_SECRET || 'dummy_webhook_secret';
+        const secret = process.env.RAZORPAY_WEBHOOK_SECRET || '';
         
         // Note: For true verification, the raw body buffer must be used.
         // For demonstration, simulating stringification.

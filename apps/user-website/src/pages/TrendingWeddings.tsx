@@ -16,11 +16,10 @@ const TrendingWeddings: React.FC = () => {
     useEffect(() => {
         const loadEvents = async () => {
             const allEvents = await fetchEvents();
-            // Filter specific trending venues as requested
             const trending = allEvents.filter(e =>
-                ['Grand Hotel', 'Sunset Resort', 'City Hall', 'Royal Palace'].includes(e.title)
+                e.category?.toLowerCase().includes('wedding') || e.isFeatured || (e.rating && Number(e.rating) >= 4.5)
             );
-            setEvents(trending);
+            setEvents(trending.length > 0 ? trending : allEvents);
             setLoading(false);
         };
         loadEvents();

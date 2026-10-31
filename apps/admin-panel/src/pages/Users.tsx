@@ -24,7 +24,7 @@ const Users: React.FC = () => {
     const tab = searchParams.get('tab');
     const [filter, setFilter] = useState<'all' | 'blocked'>(tab === 'suspicious' ? 'blocked' : 'all');
 
-    // Instead of mock data, we fetch real data using the hook
+    // Fetch real data using the hook
     const { data: response, isLoading: loading, error } = useAdminUsers(page, 20, searchQuery, 'all', 'newest');
     const users: User[] = response?.data || [];
     

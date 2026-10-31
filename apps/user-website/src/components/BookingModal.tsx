@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { createBooking, createPaymentOrder, verifyPayment } from '../lib/api';
+import { useAuth } from '@ease2event/shared/auth';
 
 interface BookingModalProps {
     isOpen: boolean;
@@ -15,6 +16,7 @@ interface BookingModalProps {
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, eventName, price, vendorId, initialPackage }) => {
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -67,8 +69,9 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, eventName,
                 }
             },
             prefill: {
-                name: "User",
-                email: "user@example.com",
+                name: user?.name || "",
+                email: user?.email || "",
+                contact: user?.phone || "",
             },
             theme: { color: "#ef4444" }
         };

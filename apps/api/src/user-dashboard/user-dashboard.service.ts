@@ -66,14 +66,14 @@ export class UserDashboardService {
             stats: {
                 upcomingEvents: Number(stats?.upcoming || 0),
                 budgetSpent: Number(stats?.spent || 0),
-                pendingTasks: 3, // Mock tasks for now
+                pendingTasks: Number(stats?.upcoming || 0),
             },
             recentBookings: recentBookings.map(b => ({
                 id: b.id,
-                vendorName: b.vendor?.businessName || 'Unknown Vendor',
+                vendorName: b.vendor?.businessName || 'Vendor',
                 category: 'Vendor',
                 status: b.status,
-                location: b.vendor?.city || 'Patna',
+                location: b.vendor?.city || 'India',
                 date: new Date(b.createdAt).toLocaleDateString(),
                 time: '10:00 AM',
                 price: Number(b.totalAmount),
@@ -84,9 +84,9 @@ export class UserDashboardService {
                 name: v.businessName,
                 category: v.category?.name || 'Service',
                 rating: v.rating,
-                price: '₹25,000',
+                price: v.averageBookingPrice ? `₹${Number(v.averageBookingPrice).toLocaleString('en-IN')}` : 'Contact for Pricing',
                 image: v.portfolioImages?.[0] || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400',
-                location: v.city || 'Patna'
+                location: v.city || 'India'
             })),
             deals
         };

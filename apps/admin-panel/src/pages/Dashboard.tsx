@@ -50,23 +50,25 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Warning Banner for Suspicious Activity */}
-            <div className="mb-8 p-4 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-between ">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-orange-100 text-orange-600 rounded-xl">
-                        <AlertTriangle size={20} />
+            {Boolean(dashboardData?.suspiciousLogins?.length) && (
+                <div className="mb-8 p-4 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-between ">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-orange-100 text-orange-600 rounded-xl">
+                            <AlertTriangle size={20} />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-bold text-orange-800">Suspicious Activity Detected</h4>
+                            <p className="text-xs font-medium text-orange-600 mt-0.5">{dashboardData?.suspiciousLogins?.length} security event(s) flagged.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 className="text-sm font-bold text-orange-800">Suspicious Activity Detected</h4>
-                        <p className="text-xs font-medium text-orange-600 mt-0.5">3 multiple failed login attempts from unknown IPs in the last hour.</p>
-                    </div>
+                    <button 
+                        onClick={() => setIsLogsModalOpen(true)}
+                        className="px-4 py-2 bg-orange-600 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                    >
+                        Review Logs
+                    </button>
                 </div>
-                <button 
-                    onClick={() => setIsLogsModalOpen(true)}
-                    className="px-4 py-2 bg-orange-600  text-white text-xs font-bold rounded-xl transition-colors"
-                >
-                    Review Logs
-                </button>
-            </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {statsLoading ? (
@@ -207,24 +209,24 @@ const Dashboard: React.FC = () => {
                 <div className="card-premium">
                     <h2 className="text-lg font-bold text-[var(--ease2event-text-primary)] mb-6">Recent activity</h2>
                     <div className="space-y-6">
-                        {[
-                            { user: 'Rahul S.', type: 'profile_view', target: 'Royal Palace', time: '10 mins ago' },
-                            { user: 'Priya K.', type: 'category_view', target: 'Photography', time: '25 mins ago' },
-                            { user: 'Amit M.', type: 'save_bookmark', target: 'Flash Moments', time: '1 hour ago' },
-                        ].map((activity, i) => (
-                            <div key={i} className="flex gap-4">
-                                <div className="flex flex-col items-center">
-                                    <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full ring-4 ring-indigo-50"></div>
-                                    {i < 2 && <div className="w-0.5 h-full bg-[var(--ease2event-border-subtle)] my-1"></div>}
+                        {dashboardData?.pendingApprovals?.length ? (
+                            dashboardData.pendingApprovals.slice(0, 3).map((item: any, i: number) => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="flex flex-col items-center">
+                                        <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full ring-4 ring-indigo-50"></div>
+                                        {i < 2 && <div className="w-0.5 h-full bg-[var(--ease2event-border-subtle)] my-1"></div>}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-[var(--ease2event-text-secondary)]">
+                                            <span className="font-bold text-[var(--ease2event-text-primary)]">{item.businessName || 'New Vendor'}</span> submitted verification documents
+                                        </p>
+                                        <p className="text-[10px] font-medium text-[var(--ease2event-text-secondary)] mt-1">Pending review</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-[var(--ease2event-text-secondary)]">
-                                        <span className="font-bold text-[var(--ease2event-text-primary)]">{activity.user}</span> {activity.type === 'profile_view' ? 'viewed' : activity.type === 'save_bookmark' ? 'bookmarked' : 'explored'} <span className="text-indigo-600 font-bold">{activity.target}</span>
-                                    </p>
-                                    <p className="text-[10px] font-medium text-[var(--ease2event-text-secondary)] mt-1">{activity.time}</p>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-sm text-[var(--ease2event-text-secondary)] py-4">No recent activity logged.</p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -236,28 +238,29 @@ const Dashboard: React.FC = () => {
                             <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
                             Suspicious Users
                         </h2>
-                        <button onClick={() => navigate('/users?tab=suspicious')} className="text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors">View All</button>
+                        <button onClick={() => navigate('/users?tab=suspicious')} className="text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors cursor-pointer">View All</button>
                     </div>
                     <div className="space-y-3">
-                        {[
-                            { name: 'Unknown Device', ip: '192.168.x.x', reason: 'Failed logins (5)', risk: 'High' },
-                            { name: 'John Doe', ip: '10.0.x.x', reason: 'Multiple IP jump', risk: 'Medium' },
-                        ].map((user, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 rounded-xl   transition-colors border border-transparent  ">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
-                                        <AlertTriangle size={16} />
+                        {dashboardData?.suspiciousLogins?.length ? (
+                            dashboardData.suspiciousLogins.map((user: any, i: number) => (
+                                <div key={i} className="flex items-center justify-between p-3 rounded-xl transition-colors border border-transparent">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                                            <AlertTriangle size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-[var(--ease2event-text-primary)]">{user.name || user.email || 'Unknown User'}</p>
+                                            <p className="text-[10px] text-[var(--ease2event-text-secondary)] font-medium">{user.reason || 'Flagged activity'} • {user.ip || 'Unknown IP'}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-bold text-[var(--ease2event-text-primary)]">{user.name}</p>
-                                        <p className="text-[10px] text-[var(--ease2event-text-secondary)] font-medium">{user.reason} • {user.ip}</p>
+                                    <div className="flex gap-2">
+                                        <button className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold transition-colors">Block</button>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    <button className="px-3 py-1.5 bg-red-50 text-red-600  rounded-lg text-[10px] font-bold transition-colors">Block</button>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-sm text-[var(--ease2event-text-secondary)] py-4">No suspicious users detected. System status is healthy.</p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -265,11 +268,11 @@ const Dashboard: React.FC = () => {
             {/* Review Logs Modal */}
             {isLogsModalOpen && (
                 <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-900 rounded-[32px]  border border-gray-200 dark:border-slate-800 w-full max-w-2xl relative p-8">
+                    <div className="bg-white dark:bg-slate-900 rounded-[32px] border border-gray-200 dark:border-slate-800 w-full max-w-2xl relative p-8">
                         <button 
                             type="button" 
                             onClick={() => setIsLogsModalOpen(false)} 
-                            className="absolute top-6 right-6 text-gray-400  "
+                            className="absolute top-6 right-6 text-gray-400 cursor-pointer"
                         >
                             <Icons.X size={24} />
                         </button>
@@ -288,32 +291,35 @@ const Dashboard: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                                    {[
-                                        { name: 'Unknown Device', ip: '192.168.1.55', event: 'Failed login (5)', time: '10 mins ago', risk: 'High', riskColor: 'text-red-650 bg-red-50 dark:bg-red-500/10' },
-                                        { name: 'John Doe', ip: '10.0.4.12', event: 'Multiple IP jump', time: '25 mins ago', risk: 'Medium', riskColor: 'text-amber-600 bg-amber-50 dark:bg-amber-500/10' },
-                                        { name: 'Rahul S.', ip: '172.16.89.2', event: 'Brute-force blocked', time: '1 hour ago', risk: 'High', riskColor: 'text-red-650 bg-red-50 dark:bg-red-500/10' },
-                                        { name: 'Priya K.', ip: '192.168.1.102', event: 'Mismatched user agent', time: '3 hours ago', risk: 'Low', riskColor: 'text-gray-600 bg-gray-50 dark:bg-slate-800' }
-                                    ].map((log, i) => (
-                                        <tr key={i} className="  transition-colors">
-                                            <td className="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">{log.name}</td>
-                                            <td className="px-4 py-3 text-xs text-gray-500">{log.event}</td>
-                                            <td className="px-4 py-3 text-xs font-mono text-gray-700 dark:text-slate-350">{log.ip}</td>
-                                            <td className="px-4 py-3 text-xs text-gray-500">{log.time}</td>
-                                            <td className="px-4 py-3 text-right whitespace-nowrap">
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${log.riskColor}`}>
-                                                    {log.risk}
-                                                </span>
+                                    {dashboardData?.suspiciousLogins?.length ? (
+                                        dashboardData.suspiciousLogins.map((log: any, i: number) => (
+                                            <tr key={i} className="transition-colors">
+                                                <td className="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">{log.name || 'Unknown'}</td>
+                                                <td className="px-4 py-3 text-xs text-gray-500">{log.event || 'Security Notice'}</td>
+                                                <td className="px-4 py-3 text-xs font-mono text-gray-700 dark:text-slate-350">{log.ip || '-'}</td>
+                                                <td className="px-4 py-3 text-xs text-gray-500">{log.time || 'Recent'}</td>
+                                                <td className="px-4 py-3 text-right whitespace-nowrap">
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${log.riskColor || 'text-red-650 bg-red-50'}`}>
+                                                        {log.risk || 'Low'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500 font-medium">
+                                                No suspicious security logs recorded.
                                             </td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
 
                         <div className="pt-6 border-t border-gray-200 dark:border-slate-800 flex justify-end gap-3 mt-6">
                             <button 
-                                onClick={() => setIsLogsModalOpen(false)}
-                                className="px-6 py-3 bg-gray-100  dark:bg-slate-800  text-gray-900 dark:text-white rounded-xl font-bold transition-colors"
+                                onClick={() => setIsLogsModalOpen(false)} 
+                                className="px-6 py-3 bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl font-bold transition-colors cursor-pointer"
                             >
                                 Close Logs
                             </button>

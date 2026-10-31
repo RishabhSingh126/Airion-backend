@@ -258,7 +258,6 @@ const Home: React.FC = () => {
                                     key={index}
                                     {...item}
                                     marketplaceStatus="AVAILABLE"
-                                    spotsLeft={42}
                                 />
                             ))}
                         </div>
@@ -309,18 +308,8 @@ const Home: React.FC = () => {
                             {/* 🔹 Cards */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                                 {events.slice(0, 6).map((item, index) => {
-                                    const statuses = ['AVAILABLE', 'FILLING_FAST', 'SOLD_OUT', 'COMING_SOON'] as const;
-                                    const status = statuses[index % 4];
-                                    const spots =
-                                        status === 'SOLD_OUT'
-                                            ? 0
-                                            : status === 'FILLING_FAST'
-                                                ? 8
-                                                : 42;
-
-                                    // Filtering
-                                    if (marketplaceTab === 'Available' && status !== 'AVAILABLE') return null;
-                                    if (marketplaceTab === 'Filling' && status !== 'FILLING_FAST') return null;
+                                    const status = 'AVAILABLE';
+                                    const spots = undefined;
 
                                     return (
                                         <div

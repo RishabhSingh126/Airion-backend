@@ -94,7 +94,7 @@ export class EmailService {
             
             if (isSandboxError) {
                 this.logger.warn(`⚠️ [Resend Sandbox Restriction] Unable to send email to ${to}. Please retrieve the OTP code from this log:`);
-                this.logger.warn(`🔑 [EMAIL OTP MOCK] To: ${to} | Code: ${otp} | Purpose: ${purpose}`);
+                this.logger.warn(`🔑 [EMAIL OTP LOG] To: ${to} | Code: ${otp} | Purpose: ${purpose}`);
                 return; // Gracefully continue so signup/login flow is not blocked
             }
 

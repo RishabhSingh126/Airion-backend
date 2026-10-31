@@ -10,7 +10,7 @@ const mapServiceToEvent = (service: any): Event => {
         image: service.images?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200',
         images: service.images || [],
         rating: service.vendor?.rating || 4.5,
-        location: service.availableLocations?.[0] || 'Mumbai',
+        location: service.availableLocations?.[0] || 'India',
         reviews: service.vendor?.totalReviews || 0,
         price: `${service.currency || 'INR'} ${parseFloat(service.basePrice).toLocaleString()}`,
         capacity: 'Contact Vendor',

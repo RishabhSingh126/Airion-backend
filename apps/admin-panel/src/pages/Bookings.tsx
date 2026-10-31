@@ -119,11 +119,21 @@ const Bookings: React.FC = () => {
     const bookingCities = bookingsData.map(b => b.city).filter(Boolean);
     const uniqueCities = Array.from(new Set([...locationCities, ...bookingCities])).sort();
 
+    const totalRevenueSum = bookingsData
+        .filter(b => b.status === 'Confirmed' || b.status === 'Completed')
+        .reduce((sum, b) => {
+            const num = parseFloat((b.amount || '').replace(/[^0-9.-]+/g, '')) || 0;
+            return sum + num;
+        }, 0);
+    const revenueFormatted = totalRevenueSum >= 100000 
+        ? `₹${(totalRevenueSum / 100000).toFixed(1)}L` 
+        : `₹${totalRevenueSum.toLocaleString('en-IN')}`;
+
     const stats = [
         { label: 'Total Bookings', value: totalBookings.toString(), icon: Calendar, color: 'blue' },
         { label: 'Confirmed', value: bookingsData.filter(b => b.status === 'Confirmed').length.toString(), icon: CheckCircle, color: 'emerald' },
         { label: 'Pending Approval', value: bookingsData.filter(b => b.status === 'Pending').length.toString(), icon: Clock, color: 'amber' },
-        { label: 'Revenue Generated', value: '₹12.4L', icon: DollarSign, color: 'indigo' },
+        { label: 'Revenue Generated', value: revenueFormatted, icon: DollarSign, color: 'indigo' },
     ];
 
     const filteredBookings = bookingsData.filter(b => {

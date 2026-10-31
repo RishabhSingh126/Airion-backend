@@ -42,7 +42,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onApply, initialFilters }
         }
     }, [initialFilters]);
 
-    // Mock data for city suggestions
+    // Major Indian cities for autocomplete
     const cities = [
         'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata', 'Pune',
         'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam',

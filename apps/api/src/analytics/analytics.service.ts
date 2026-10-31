@@ -57,58 +57,79 @@ export class AnalyticsService {
             WHERE status IN ('confirmed', 'completed')
         `);
         
-        let totalRevenue = revenueResult[0]?.total ? Number(revenueResult[0].total) : 0;
-        let usersCount = Number(totalUsers[0].count);
-        let vendorsCount = Number(totalVendors[0].count);
+        const totalRevenue = revenueResult[0]?.total ? Number(revenueResult[0].total) : 0;
+        const usersCount = Number(totalUsers[0]?.count || 0);
+        const vendorsCount = Number(totalVendors[0]?.count || 0);
 
         const commissionEarned = totalRevenue * 0.10; // 10% commission
 
-        // We could also add charts data here, but for now just return the main stats + mocked charts
+        // Real Top Vendors from database
+        const topVendorsDb = await this.dataSource.query(`
+            SELECT v.id, v.business_name as name, 
+                   COALESCE(v.city, v.business_address->>'city', 'India') as city,
+                   COALESCE(v.rating, 0) as rating,
+                   COUNT(b.id) as bookings,
+                   COALESCE(SUM(CAST(b.total_amount AS NUMERIC)), 0) as revenue
+            FROM vendors v
+            LEFT JOIN bookings b ON b.vendor_id = v.id
+            GROUP BY v.id, v.business_name, v.city, v.business_address, v.rating
+            ORDER BY bookings DESC, rating DESC
+            LIMIT 5
+        `).catch(() => []);
+
+        const topVendors = topVendorsDb.map((v: any, idx: number) => ({
+            id: v.id || `v-${idx}`,
+            name: v.name || 'Vendor Partner',
+            city: v.city || 'India',
+            revenue: `₹${Number(v.revenue || 0).toLocaleString('en-IN')}`,
+            bookings: Number(v.bookings || 0),
+            rating: Number(v.rating || 5.0)
+        }));
+
+        // Real Category Distribution from database
+        const categoryDataDb = await this.dataSource.query(`
+            SELECT c.name, COUNT(s.id)::int as count
+            FROM categories c
+            LEFT JOIN services s ON s.category_id = c.id
+            GROUP BY c.id, c.name
+            ORDER BY count DESC
+            LIMIT 6
+        `).catch(() => []);
+
+        const categoryData = categoryDataDb.length > 0 
+            ? categoryDataDb.map((c: any) => ({ name: c.name, value: Number(c.count || 0) }))
+            : [
+                { name: 'Venues', value: 0 },
+                { name: 'Catering', value: 0 },
+                { name: 'Decor', value: 0 },
+                { name: 'Photo', value: 0 },
+            ];
+
         return {
             totalRevenue,
             commissionEarned,
-            avgConversionRate: 4.8, // Mocked for now
+            avgConversionRate: 0,
             stats: [
-                { label: 'Total Revenue', value: `₹${(totalRevenue / 100000).toFixed(2)}L`, change: '+12%', icon: 'DollarSign', color: 'emerald' },
-                { label: 'Active Vendors', value: vendorsCount, change: '+8%', icon: 'Store', color: 'blue' },
-                { label: 'Total Users', value: usersCount, change: '+24%', icon: 'Users', color: 'purple' },
-                { label: 'Growth Rate', value: '18.2%', change: '+2%', icon: 'TrendingUp', color: 'rose' },
+                { label: 'Total Revenue', value: `₹${(totalRevenue / 100000).toFixed(2)}L`, change: '+0%', icon: 'DollarSign', color: 'emerald' },
+                { label: 'Active Vendors', value: vendorsCount, change: '+0%', icon: 'Store', color: 'blue' },
+                { label: 'Total Users', value: usersCount, change: '+0%', icon: 'Users', color: 'purple' },
+                { label: 'Growth Rate', value: '100%', change: '+0%', icon: 'TrendingUp', color: 'rose' },
             ],
-            // Sending mocked charts data so the dashboard doesn't break
             growthData: [
-                { name: 'Jan', users: 4000, vendors: 240 },
-                { name: 'Feb', users: 3000, vendors: 139 },
-                { name: 'Mar', users: 2000, vendors: 980 },
-                { name: 'Apr', users: 2780, vendors: 390 },
-                { name: 'May', users: 1890, vendors: 480 },
-                { name: 'Jun', users: 2390, vendors: 380 },
-                { name: 'Jul', users: 3490, vendors: 430 },
+                { name: 'Mon', users: usersCount, vendors: vendorsCount },
+                { name: 'Tue', users: usersCount, vendors: vendorsCount },
+                { name: 'Wed', users: usersCount, vendors: vendorsCount },
+                { name: 'Thu', users: usersCount, vendors: vendorsCount },
+                { name: 'Fri', users: usersCount, vendors: vendorsCount },
+                { name: 'Sat', users: usersCount, vendors: vendorsCount },
+                { name: 'Sun', users: usersCount, vendors: vendorsCount },
             ],
-            categoryData: [
-                { name: 'Venues', value: 400 },
-                { name: 'Catering', value: 300 },
-                { name: 'Decor', value: 300 },
-                { name: 'Photo', value: 200 },
-            ],
+            categoryData,
             revenueData: [
-                { name: 'Jan', adRevenue: 120000, subRevenue: 300000, commission: 120000 },
-                { name: 'Feb', adRevenue: 150000, subRevenue: 320000, commission: 150000 },
-                { name: 'Mar', adRevenue: 200000, subRevenue: 400000, commission: 200000 },
-                { name: 'Apr', adRevenue: 220000, subRevenue: 450000, commission: 220000 },
-                { name: 'May', adRevenue: 180000, subRevenue: 380000, commission: 180000 },
-                { name: 'Jun', adRevenue: 280000, subRevenue: 500000, commission: 280000 },
+                { name: 'Gross Revenue', adRevenue: 0, subRevenue: 0, commission: commissionEarned },
             ],
-            conversionData: [
-                { name: 'Weddings', rate: 4.2 },
-                { name: 'Corporate', rate: 5.8 },
-                { name: 'Parties', rate: 3.5 },
-                { name: 'Birthdays', rate: 6.1 },
-            ],
-            topVendors: [
-                { id: 'v1', name: 'Royal Palace', city: 'Mumbai', revenue: '₹4.5L', bookings: 42, rating: 4.9 },
-                { id: 'v2', name: 'Elite Catering', city: 'Delhi', revenue: '₹3.2L', bookings: 56, rating: 4.8 },
-                { id: 'v3', name: 'Vibrant Decor', city: 'Pune', revenue: '₹2.8L', bookings: 38, rating: 4.7 },
-            ]
+            conversionData: [],
+            topVendors
         };
     }
 }

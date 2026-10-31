@@ -23,7 +23,7 @@ export class SmsService {
         const apiKey = this.configService.get<string>('FAST2SMS_API_KEY');
 
         if (!apiKey || apiKey === 'your_fast2sms_api_key_here' || apiKey.length < 20) {
-            this.logger.warn(`[DEV SMS MOCK] 📱 -> To: ${cleanNumber} | Code: ${otp} | Context: ${context}`);
+            this.logger.warn(`[DEV SMS LOG] 📱 -> To: ${cleanNumber} | Code: ${otp} | Context: ${context}`);
             return;
         }
 

@@ -41,51 +41,9 @@ const CalendarPage: React.FC = () => {
  enabled: !!vendorId
  });
 
- const displayBookings = (bookings && bookings.length > 0) ? bookings : [
- {
- id: 'cal-bk-1',
- eventDate: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(),
- listingName: 'Premium Floral Decoration',
- userName: 'Aditi Sharma',
- status: 'Confirmed'
- },
- {
- id: 'cal-bk-2',
- eventDate: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString(),
- listingName: 'Luxury 5-Course Catering',
- userName: 'Kunal Kapoor',
- status: 'Pending'
- },
- {
- id: 'cal-bk-3',
- eventDate: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
- listingName: 'DJ & Pro Sound System',
- userName: 'Priya Desai',
- status: 'Completed'
- },
- {
- id: 'cal-bk-4',
- eventDate: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
- listingName: 'Luxury 5-Course Catering',
- userName: 'Sneha Reddy',
- status: 'Confirmed'
- }
- ];
+  const displayBookings = (bookings && bookings.length > 0) ? bookings : [];
 
- const displayBlocks = (Array.isArray(availabilityBlocks) && availabilityBlocks.length > 0) ? availabilityBlocks : [
- {
- id: 'cal-blk-1',
- date: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString().split('T')[0],
- reason: 'Personal Holiday',
- status: 'blocked'
- },
- {
- id: 'cal-blk-2',
- date: new Date(new Date().setDate(new Date().getDate() + 11)).toISOString().split('T')[0],
- reason: 'Venue Maintenance',
- status: 'blocked'
- }
- ];
+  const displayBlocks = (Array.isArray(availabilityBlocks) && availabilityBlocks.length > 0) ? availabilityBlocks : [];
 
  const isLoading = bookingsLoading || availabilityLoading;
 

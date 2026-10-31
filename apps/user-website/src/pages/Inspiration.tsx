@@ -49,7 +49,7 @@ const Inspiration: React.FC = () => {
     const images = [
         { id: 1, category: 'Decor', image: 'https://images.unsplash.com/photo-1587271636175-90d58cdad458?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bWFuZGFwfGVufDB8fDB8fHww', title: 'Floral Mandap Setup' },
         { id: 2, category: 'Outfits', image: 'https://images.unsplash.com/photo-1724856604403-60304b28906c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGxlaGVuZ2F8ZW58MHx8MHx8fDA%3D', title: 'Bridal Lehenga' },
-        { id: 3, category: 'Venues', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop', title: 'Royal Palace Wedding' },
+        { id: 3, category: 'Venues', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop', title: 'Heritage Palace Wedding' },
         { id: 4, category: 'Food', image: 'https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=1200&auto=format&fit=crop', title: 'Gourmet Catering' },
         { id: 5, category: 'Photography', image: 'https://images.unsplash.com/photo-1668028772352-bdd4951048cf?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDd8fENvdXBsZSUyMFBvcnRyYWl0fGVufDB8fDB8fHww', title: 'Couple Portrait' },
         { id: 6, category: 'Mehndi', image: 'https://plus.unsplash.com/premium_photo-1661862397518-8e50332b6e97?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bWVobmRpJTIwZGVzaWdufGVufDB8fDB8fHww', title: 'Intricate Mehndi Design' },

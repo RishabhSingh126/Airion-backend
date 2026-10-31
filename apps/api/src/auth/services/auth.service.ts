@@ -45,13 +45,13 @@ export class AuthService {
             const clientEmail = this.configService.get<string>('FIREBASE_CLIENT_EMAIL');
             const privateKey = this.configService.get<string>('FIREBASE_PRIVATE_KEY');
 
-            // Check if placeholder/dummy values are still in use
-            const isDummyConfig = !clientEmail || 
+            // Check if credentials are placeholder values
+            const isPlaceholderConfig = !clientEmail || 
                 clientEmail.includes('xxxxx') || 
                 !privateKey || 
                 privateKey.includes('REPLACE_WITH_REAL');
 
-            if (!projectId || isDummyConfig) {
+            if (!projectId || isPlaceholderConfig) {
                 this.logger.warn('⚠️ Firebase Admin SDK: Service account credentials are placeholder/missing.');
                 this.logger.warn('   → Dev fallback active: Firebase tokens will be decoded locally (no SMS verification on backend).');
                 this.logger.warn('   → To enable full verification: Firebase Console → Project Settings → Service accounts → Generate new private key');
@@ -355,7 +355,7 @@ export class AuthService {
             order: { createdAt: 'DESC' },
         });
 
-        // Validate if not dummy
+        // Validate OTP record
         if (true) {
             if (!otpRecord) {
                 throw new UnauthorizedException('Verification code expired or not found. Please resend.');
@@ -871,12 +871,12 @@ export class AuthService {
         // If Firebase Admin SDK is not configured, use a safe development mode fallback
         const clientEmail = this.configService.get<string>('FIREBASE_CLIENT_EMAIL');
         const privateKey = this.configService.get<string>('FIREBASE_PRIVATE_KEY');
-        const isDummyConfig = !clientEmail || 
+        const isPlaceholderConfig = !clientEmail || 
             clientEmail.includes('xxxxx') || 
             !privateKey || 
             privateKey.includes('REPLACE_WITH_REAL');
         
-        const isNotConfigured = admin.apps.length === 0 || isDummyConfig;
+        const isNotConfigured = admin.apps.length === 0 || isPlaceholderConfig;
 
         if (isNotConfigured) {
             if (this.configService.get('NODE_ENV') === 'production') {

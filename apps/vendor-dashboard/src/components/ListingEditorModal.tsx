@@ -107,7 +107,7 @@ const ListingEditorModal: React.FC<ListingEditorModalProps> = ({ isOpen, onClose
  <p className="text-xs text-slate-500 mt-1">PNG, JPG, WEBP up to 5MB</p>
  </div>
  )}
- {/* Mock file input trigger */}
+ {/* File input trigger */}
  <input
  type="file"
  accept="image/*"

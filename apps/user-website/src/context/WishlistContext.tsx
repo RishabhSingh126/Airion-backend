@@ -30,18 +30,18 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     useEffect(() => {
         if (user) {
-            const localMocks = JSON.parse(localStorage.getItem(`wishlist_${user.id}`) || '[]');
+            const cachedWishlist = JSON.parse(localStorage.getItem(`wishlist_${user.id}`) || '[]');
             fetchProductWishlist()
                 .then(data => {
                     if (Array.isArray(data)) {
-                        setProductWishlistIds([...data.map((w: any) => w.productId), ...localMocks]);
+                        setProductWishlistIds([...data.map((w: any) => w.productId), ...cachedWishlist]);
                     } else {
-                        setProductWishlistIds(localMocks);
+                        setProductWishlistIds(cachedWishlist);
                     }
                 })
                 .catch(err => {
                     console.error('Failed to load product wishlist', err);
-                    setProductWishlistIds(localMocks);
+                    setProductWishlistIds(cachedWishlist);
                 });
         } else {
             setProductWishlistIds([]);
@@ -65,25 +65,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const toggleProductWishlist = async (productId: string) => {
         if (!user) return false;
-        
-        // Handle mock frontend products via localStorage to avoid DB UUID errors
-        if (productId.startsWith('m')) {
-            const isWishlisted = !productWishlistIds.includes(productId);
-            if (isWishlisted) {
-                setProductWishlistIds(prev => {
-                    const newIds = [...prev, productId];
-                    localStorage.setItem(`wishlist_${user.id}`, JSON.stringify(newIds.filter(id => id.startsWith('m'))));
-                    return newIds;
-                });
-            } else {
-                setProductWishlistIds(prev => {
-                    const newIds = prev.filter(id => id !== productId);
-                    localStorage.setItem(`wishlist_${user.id}`, JSON.stringify(newIds.filter(id => id.startsWith('m'))));
-                    return newIds;
-                });
-            }
-            return isWishlisted;
-        }
 
         try {
             const result = await apiToggleProductWishlist(productId);

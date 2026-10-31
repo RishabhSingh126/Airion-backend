@@ -151,81 +151,26 @@ export const userDashboard = {
      * Get user dashboard overview data
      */
     getOverview: async (): Promise<any> => {
-        const getMockOverview = () => ({
-            stats: {
-                upcomingEvents: 2,
-                budgetSpent: 385000,
-                pendingTasks: 3
-            },
-            recentBookings: [
-                {
-                    id: 'mock-b-1',
-                    vendorName: 'The Royal Grand Palace',
-                    category: 'Venue',
-                    status: 'confirmed',
-                    location: 'Rajasthan',
-                    date: '10/24/2026',
-                    time: '12:00 PM',
-                    price: 350000,
-                    imageUrl: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400'
-                },
-                {
-                    id: 'mock-b-2',
-                    vendorName: 'Pixel Perfect Photography',
-                    category: 'Photography',
-                    status: 'pending',
-                    location: 'Delhi',
-                    date: '11/15/2026',
-                    time: '09:00 AM',
-                    price: 35000,
-                    imageUrl: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=400'
-                }
-            ],
-            trendingVendors: [
-                {
-                    id: 'mock-v-1',
-                    name: 'The Royal Grand Palace',
-                    category: 'Venue',
-                    rating: 4.9,
-                    price: '₹3,50,000',
-                    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400',
-                    location: 'Rajasthan'
-                },
-                {
-                    id: 'mock-v-2',
-                    name: 'Pixel Perfect Photography',
-                    category: 'Photography',
-                    rating: 4.8,
-                    price: '₹35,000',
-                    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=400',
-                    location: 'Delhi'
-                },
-                {
-                    id: 'mock-v-3',
-                    name: 'Neon Sky Lounge',
-                    category: 'Party',
-                    rating: 4.5,
-                    price: '₹65,000',
-                    image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400',
-                    location: 'Bangalore'
-                }
-            ],
-            deals: [
-                { id: 1, title: 'Wedding Season Deals', subtitle: 'Up to 30% Off', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800', link: '/marketplace' },
-                { id: 2, title: 'Book Now, Pay Later', subtitle: 'EMI on all bookings', image: 'https://plus.unsplash.com/premium_photo-1661879046374-2f7298cd2ab8?w=600&auto=format&fit=crop&q=80', link: '/marketplace' }
-            ]
-        });
-
         try {
             const response = await authApi.get(AUTH_ENDPOINTS.USER_DASHBOARD_OVERVIEW);
             const data = response.data?.data || response.data;
-            if (!data || !data.stats || data.stats.upcomingEvents === 0) {
-                return getMockOverview();
+            if (data) {
+                return data;
             }
-            return data;
+            return {
+                stats: { upcomingEvents: 0, budgetSpent: 0, pendingTasks: 0 },
+                recentBookings: [],
+                trendingVendors: [],
+                deals: []
+            };
         } catch (err) {
-            console.warn('[userDashboard] Failed to fetch live overview, falling back to mock:', err);
-            return getMockOverview();
+            console.error('[userDashboard] Failed to fetch live overview:', err);
+            return {
+                stats: { upcomingEvents: 0, budgetSpent: 0, pendingTasks: 0 },
+                recentBookings: [],
+                trendingVendors: [],
+                deals: []
+            };
         }
     },
 };

@@ -66,9 +66,7 @@ const DigitalInvites: React.FC = () => {
     const [eventVenue, setEventVenue] = useState('');
     const [hostName, setHostName] = useState('');
     const [personalNote, setPersonalNote] = useState('With great joy, we invite you to celebrate this special day with us.');
-    const [guests, setGuests] = useState<Guest[]>([
-        { id: '1', name: 'Priya Sharma', phone: '+91 98765 43210', email: 'priya@email.com' },
-    ]);
+    const [guests, setGuests] = useState<Guest[]>([]);
     const [newName, setNewName] = useState('');
     const [newPhone, setNewPhone] = useState('');
     const [newEmail, setNewEmail] = useState('');

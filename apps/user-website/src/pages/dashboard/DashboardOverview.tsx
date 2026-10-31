@@ -58,7 +58,7 @@ const DashboardOverview: React.FC = () => {
     const { stats, recentBookings, trendingVendors, deals } = data;
     const firstName = user?.name?.split(' ')[0] || 'Member';
 
-    // Mock chart data from real spent vs default budget goal (e.g. 5L)
+    // Budget allocation: spent vs remaining target
     const chartData = [
         { name: 'Spent', value: stats.budgetSpent },
         { name: 'Available', value: Math.max(500000 - stats.budgetSpent, 0) }

@@ -15,10 +15,10 @@ const Settings: React.FC = () => {
     const { theme, toggleTheme } = useTheme();
     const [activeTab, setActiveTab] = useState('general');
 
-    // Admin Users Mock State
+    // Authorized Administrators
     const [admins, setAdmins] = useState<AdminUser[]>([
         { id: '1', name: 'Vinay Sharma', email: 'vinaysharma31681@gmail.com', phone: '9616981292', role: 'Super Admin' },
-        { id: '2', name: 'Admin 2', email: 'admin2@ease2event.com', phone: '8130607796', role: 'Admin' },
+        { id: '2', name: 'Abhishek Kumar', email: 'abhishekkumar518@gmail.com', phone: '8130607796', role: 'Admin' },
     ]);
 
     // Modals

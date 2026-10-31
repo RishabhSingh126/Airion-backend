@@ -79,9 +79,8 @@ const Advertisements: React.FC = () => {
                 throw new Error('No URL returned from upload');
             }
         } catch (err: any) {
-            toast.success('Image loaded locally for preview (mock mode).');
-            // Fallback for development/testing if Cloudinary config is missing
-            setImageUrl(URL.createObjectURL(file));
+            console.error('Banner upload error:', err);
+            toast.error(err.response?.data?.message || err.message || 'Failed to upload banner');
         } finally {
             setUploading(false);
         }

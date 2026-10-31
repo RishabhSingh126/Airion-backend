@@ -49,7 +49,6 @@ const Analytics: React.FC = () => {
         queryFn: async () => {
             if (!vendorId) return null;
             try {
-                // Assuming stats endpoint exists, fallback to mock if not
                 const res: any = await api.get(`/vendors/${vendorId}/stats/bookings`);
                 return res.data || res;
             } catch (err) {

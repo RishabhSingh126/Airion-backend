@@ -3,7 +3,7 @@ import { Map, Marker, Overlay } from 'pigeon-maps';
 import { MapPin, Navigation } from 'lucide-react';
 import type { Event } from '../types';
 
-// Mock coordinates for major locations
+// Coordinates for major locations
 const LOCATION_COORDINATES: Record<string, [number, number]> = {
     'Mumbai': [19.0760, 72.8777],
     'Bangalore': [12.9716, 77.5946],

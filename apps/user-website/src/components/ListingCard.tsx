@@ -16,7 +16,6 @@ interface ListingCardProps {
     price: string;
     description: string;
     category?: string;
-    // Add explicit fields or mock fallback
     tags?: string[];
     highlights?: string[];
     isTrending?: boolean;
