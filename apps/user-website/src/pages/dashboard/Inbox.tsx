@@ -108,33 +108,6 @@ export const Inbox: React.FC = () => {
         e.preventDefault();
         if (!messageText.trim() || !selectedThreadId) return;
 
-        if (selectedThreadId === 'mock-support') {
-            const userMsg = {
-                id: `user-${Date.now()}`,
-                senderId: user?.id || 'user',
-                body: messageText,
-                createdAt: new Date().toISOString()
-            };
-            queryClient.setQueryData(['messages', 'mock-support'], (prev: any) => [...(prev || []), userMsg]);
-            setMessageText('');
-
-            // Trigger typing effect
-            setTypingUser('Ease2Event Support AI');
-            setTimeout(() => {
-                setTypingUser(null);
-                queryClient.setQueryData(['messages', 'mock-support'], (prev: any) => [
-                    ...(prev || []),
-                    {
-                        id: `support-${Date.now()}`,
-                        senderId: 'support',
-                        body: 'Thank you for your message. An event coordination agent will review your inquiry and get back to you shortly. Feel free to contact our toll-free support line at +91 1800-Ease2event.',
-                        createdAt: new Date().toISOString()
-                    }
-                ]);
-            }, 1800);
-            return;
-        }
-
         const socket = getSocket();
         if (socket) {
             socket.emit('sendMessage', {
@@ -173,21 +146,13 @@ export const Inbox: React.FC = () => {
         setShowMobileChat(true);
     };
 
-    const MOCK_CONVO = {
-        id: 'mock-support',
-        participantIds: [user?.id || 'user', 'support'],
-        lastMessage: 'Let us know if you need help with your booking!',
-        lastMessageAt: new Date().toISOString(),
-        title: 'Ease2Event Support',
-    };
+    const filteredConversations = (conversations || []).filter((chat: any) => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        return chat.title?.toLowerCase().includes(query) || chat.lastMessage?.toLowerCase().includes(query);
+    });
 
-    const filteredConversations = conversations.length > 0 
-        ? conversations.filter((c: any) => c.participantIds?.includes(user?.id))
-        : [MOCK_CONVO];
-
-    const selectedChat = selectedThreadId === 'mock-support' 
-        ? MOCK_CONVO 
-        : conversations.find((c: any) => c.id === selectedThreadId);
+    const selectedChat = conversations.find((c: any) => c.id === selectedThreadId);
 
     if (loadingConversations) {
         return (
@@ -248,9 +213,10 @@ export const Inbox: React.FC = () => {
                         </div>
                     ))}
                     {filteredConversations.length === 0 && (
-                        <div className="flex flex-col items-center justify-center h-full text-neutral-400 p-10 opacity-30">
-                            <Mail size={48} strokeWidth={1} className="mb-4" />
-                            <p className="text-sm font-bold tracking-widest text-center">Neural nodes inactive</p>
+                        <div className="flex flex-col items-center justify-center h-64 text-neutral-400 p-8 text-center">
+                            <Mail size={40} className="mb-3 text-neutral-300 dark:text-neutral-600" />
+                            <p className="text-sm font-semibold text-neutral-600 dark:text-neutral-300">No conversations yet</p>
+                            <p className="text-xs text-neutral-400 mt-1">Contact a vendor from their profile to start chatting.</p>
                         </div>
                     )}
                 </div>

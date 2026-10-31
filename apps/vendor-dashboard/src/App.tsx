@@ -23,8 +23,6 @@ import Promotions from './pages/Promotions';
 import Calendar from './pages/Calendar';
 import Earnings from './pages/Earnings';
 import PackageInquiries from './pages/PackageInquiries';
-import Earnings from './pages/Earnings';
-import PackageInquiries from './pages/PackageInquiries';
 import Services from './pages/Services';
 import Reviews from './pages/Reviews';
 import Gallery from './pages/Gallery';
@@ -74,7 +72,6 @@ const App: React.FC = () => {
                   <Route path="services" element={<Services />} />
                   <Route path="products" element={<Navigate to="/services" replace />} />
                   <Route path="reviews" element={<Reviews />} />
-                  <Route path="shop-items" element={<ShopItems />} />
                   <Route path="ads" element={<Promotions />} />
                   <Route path="promotions" element={<Promotions />} />
                   <Route path="plan-event" element={<EventPlanning />} />

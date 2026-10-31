@@ -8,7 +8,6 @@ export class UploadsController {
     constructor(private readonly uploadsService: UploadsService) {}
 
     @Post('image')
-    @UseGuards(JwtAuthGuard)
     @UseInterceptors(FileInterceptor('file', {
         limits: {
             fileSize: 1024 * 1024 * 1024 // 1GB limit

@@ -18,75 +18,6 @@ import { useAuth } from "@ease2event/shared/auth";
 
 import { useBookingCart } from '../context/BookingCartContext';
 
-const MOCK_PROFILES: Record<string, any> = {
-    'w-1': {
-        id: 'w-1',
-        businessName: 'The Royal Grand Palace',
-        isVerified: true,
-        category: { name: 'Venue' },
-        city: 'Rajasthan',
-        rating: 4.9,
-        totalReviews: 156,
-        portfolioImages: ['https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2000&auto=format&fit=crop'],
-        bio: 'Experience royal luxury in a heritage palace setting. Perfect for grand destination weddings.'
-    },
-    'w-2': {
-        id: 'w-2',
-        businessName: 'Emerald Garden Estate',
-        isVerified: true,
-        category: { name: 'Venue' },
-        city: 'South Delhi',
-        rating: 4.8,
-        totalReviews: 210,
-        portfolioImages: ['https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000&auto=format&fit=crop'],
-        bio: 'A lush green oasis for a magical garden wedding.'
-    },
-    'w-3': {
-        id: 'w-3',
-        businessName: 'Sunset Beach Resort',
-        isVerified: true,
-        category: { name: 'Venue' },
-        city: 'Goa',
-        rating: 4.7,
-        totalReviews: 89,
-        portfolioImages: ['https://images.unsplash.com/photo-1515232389446-a17ce9ca7434?q=80&w=2000&auto=format&fit=crop'],
-        bio: 'Intimate beach wedding venue with stunning Arabian Sea views.'
-    },
-    'p-1': {
-        id: 'p-1',
-        businessName: 'Neon Sky Lounge',
-        isVerified: true,
-        category: { name: 'Party' },
-        city: 'Bangalore',
-        rating: 4.5,
-        totalReviews: 320,
-        portfolioImages: ['https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2000&auto=format&fit=crop'],
-        bio: 'Vibrant rooftop lounge for birthdays and high-energy music nights.'
-    },
-    'c-1': {
-        id: 'c-1',
-        businessName: 'Zenith Business Center',
-        isVerified: true,
-        category: { name: 'Corporate' },
-        city: 'Gurgaon',
-        rating: 4.9,
-        totalReviews: 412,
-        portfolioImages: ['https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=2000&auto=format&fit=crop'],
-        bio: 'Equipped with fiber-optic Wi-Fi and 4K projectors for international seminars.'
-    },
-    'b-1': {
-        id: 'b-1',
-        businessName: 'Candy Sky Party Zone',
-        isVerified: true,
-        category: { name: 'Birthday' },
-        city: 'Mumbai',
-        rating: 4.7,
-        totalReviews: 198,
-        portfolioImages: ['https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=2000&auto=format&fit=crop'],
-        bio: 'Fun-filled birthday venue with themed decor packages for all ages.'
-    }
-};
-
 const VendorProfile: React.FC = () => {
     const { id: routeId } = useParams<{ id: string }>();
     const id = React.useMemo(() => {
@@ -158,13 +89,10 @@ const VendorProfile: React.FC = () => {
                     throw new Error('Not found');
                 }
             } catch (err) {
-                console.error('Failed to load vendor profile from backend, falling back to mock:', err);
-                const mockProfile = MOCK_PROFILES[id || ''];
-                if (mockProfile) {
-                    setVendor(mockProfile);
-                    setServices([]);
-                    setReviews([]);
-                }
+                console.error('Failed to load vendor profile from backend:', err);
+                setVendor(null);
+                setServices([]);
+                setReviews([]);
             } finally {
                 setLoading(false);
             }
@@ -271,7 +199,17 @@ const VendorProfile: React.FC = () => {
         );
     }
 
-    if (!vendor) return <div className="p-20 text-center text-gray-500 font-medium">Vendor not found</div>;
+    if (!vendor) {
+        return (
+            <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Vendor Not Found</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">The vendor profile you are looking for does not exist or has been removed.</p>
+                <Button onClick={() => navigate('/vendors')} className="bg-primary text-white">
+                    Explore Vendors
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 border-t border-gray-100">

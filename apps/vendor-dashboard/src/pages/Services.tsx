@@ -56,41 +56,8 @@ const Services: React.FC = () => {
  const fetchData = async () => {
  if (!vendorId) return;
  try {
- const res = await api.get(`/services?vendorId=${vendorId}&limit=100`) as any[];
- const dummyServices = [
- {
- id: 'dummy-1',
- title: 'Premium Floral Decoration',
- description: 'Transform your venue with our signature imported exotic floral arrangements. Includes stage backdrop, entrance arch, and centerpieces.',
- basePrice: '125000',
- category: { name: 'Decoration' },
- guestCapacity: 500,
- images: ['https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=1000'],
- isActive: true
- },
- {
- id: 'dummy-2',
- title: 'DJ & Pro Sound System',
- description: 'Industry-standard Line Array speakers, dual subwoofers, intelligent moving head lights, and a professional DJ for 6 hours.',
- basePrice: '45000',
- category: { name: 'Entertainment' },
- guestCapacity: 1000,
- images: ['https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=1000'],
- isActive: true
- },
- {
- id: 'dummy-3',
- title: 'Luxury 5-Course Catering',
- description: 'A culinary journey featuring authentic regional delicacies and continental favorites. Live counters and premium cutlery included.',
- basePrice: '2500',
- category: { name: 'Catering' },
- guestCapacity: 800,
- images: ['https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=1000'],
- isActive: true
- }
- ];
- 
- setServices((res && res.length > 0) ? res : dummyServices);
+ const res = await api.get(`/services?vendorId=${vendorId}&limit=100`) as any;
+ setServices(Array.isArray(res) ? res : (res?.data || []));
  } catch (err: any) {
  console.error('Failed to load initial data');
  setServices([]);

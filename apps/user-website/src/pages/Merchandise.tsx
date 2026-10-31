@@ -9,8 +9,6 @@ import { toast } from 'react-hot-toast';
 import { Heart } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 
-import { MOCK_PRODUCTS } from '../lib/mockProducts';
-
 const CATEGORIES = ['All', 'Decor', 'Apparel', 'Signage', 'Gifts', 'Entertainment'];
 
 const AddToCartWidget = ({ product, variant = 'text' }: { product: Product, variant?: 'text' | 'icon' }) => {
@@ -161,7 +159,8 @@ const Merchandise: React.FC = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
-    const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isAddingHero, setIsAddingHero] = useState(false);
 
     const handleAddToCart = async (product: Product) => {
@@ -180,20 +179,28 @@ const Merchandise: React.FC = () => {
     };
 
     React.useEffect(() => {
+        setLoading(true);
         fetchProducts()
             .then((res: any) => {
-                if (res && res.length > 0) {
-                    setProducts(res.map((p: any) => ({
+                const list = Array.isArray(res) ? res : (res?.data || []);
+                if (Array.isArray(list)) {
+                    setProducts(list.map((p: any) => ({
                         id: p.id,
                         title: p.title,
                         price: Number(p.price),
                         category: p.category,
-                        image: p.image || 'https://images.unsplash.com/photo-1729919561898-f4a994c90b0c?w=600&auto=format&fit=crop&q=80'
+                        image: p.image || 'https://images.unsplash.com/photo-1729919561898-f4a994c90b0c?w=600&auto=format&fit=crop&q=80',
+                        description: p.description
                     })));
+                } else {
+                    setProducts([]);
                 }
             })
             .catch(() => {
-                // Keep mocks as fallback
+                setProducts([]);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -202,6 +209,8 @@ const Merchandise: React.FC = () => {
         const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
         return matchCat && matchSearch;
     });
+
+    const spotlightProduct = products[0];
 
     return (
         <main className="min-h-screen bg-neutral-50 dark:bg-slate-950 pt-20 pb-16">
@@ -226,45 +235,49 @@ const Merchandise: React.FC = () => {
                             >
                                 Browse Collection
                             </a>
-                            <button
-                                onClick={() => handleAddToCart(MOCK_PRODUCTS[0])}
-                                disabled={isAddingHero}
-                                className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-lg border border-neutral-700 text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-                            >
-                                {isAddingHero ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
-                                Get Featured Lights (₹1,200)
-                            </button>
+                            {spotlightProduct && (
+                                <button
+                                    onClick={() => handleAddToCart(spotlightProduct)}
+                                    disabled={isAddingHero}
+                                    className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-lg border border-neutral-700 text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                                >
+                                    {isAddingHero ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                                    Get {spotlightProduct.title} (₹{spotlightProduct.price.toLocaleString()})
+                                </button>
+                            )}
                         </div>
                     </div>
 
                     {/* Right Section: Flat Spotlight Card (No Hover / Animation) */}
-                    <div className="lg:col-span-5">
-                        <div className="p-6 bg-neutral-850 border border-neutral-850 rounded-2xl flex flex-col sm:flex-row gap-4 items-center">
-                            <div className="w-28 h-28 rounded-xl overflow-hidden bg-neutral-800 flex-shrink-0">
-                                <img
-                                    src="https://images.unsplash.com/photo-1729919561898-f4a994c90b0c?w=600&auto=format&fit=crop&q=80"
-                                    alt="Spotlight item"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
+                    {spotlightProduct && (
+                        <div className="lg:col-span-5">
+                            <div className="p-6 bg-neutral-850 border border-neutral-850 rounded-2xl flex flex-col sm:flex-row gap-4 items-center">
+                                <div className="w-28 h-28 rounded-xl overflow-hidden bg-neutral-800 flex-shrink-0">
+                                    <img
+                                        src={spotlightProduct.image}
+                                        alt={spotlightProduct.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
 
-                            <div className="space-y-2 flex-1 text-center sm:text-left">
-                                <span className="px-2 py-0.5 bg-red-950 text-[9px] font-bold text-red-400 uppercase tracking-widest rounded">
-                                    Best Seller
-                                </span>
-                                <h3 className="font-bold text-white text-sm line-clamp-1">
-                                    Premium LED Fairy Lights (50m)
-                                </h3>
-                                <p className="text-neutral-400 text-xs line-clamp-2">
-                                    Ambient warm lighting for weddings, birthdays, and canopy setups. Perfect for backdrops.
-                                </p>
-                                <div className="flex items-center justify-between pt-1">
-                                    <span className="font-bold text-sm text-white">₹1,200</span>
-                                    <AddToCartWidget product={MOCK_PRODUCTS[0]} />
+                                <div className="space-y-2 flex-1 text-center sm:text-left">
+                                    <span className="px-2 py-0.5 bg-red-950 text-[9px] font-bold text-red-400 uppercase tracking-widest rounded">
+                                        Featured Item
+                                    </span>
+                                    <h3 className="font-bold text-white text-sm line-clamp-1">
+                                        {spotlightProduct.title}
+                                    </h3>
+                                    <p className="text-neutral-400 text-xs line-clamp-2">
+                                        {(spotlightProduct as any).description || 'Premium merchandise for celebrations and events.'}
+                                    </p>
+                                    <div className="flex items-center justify-between pt-1">
+                                        <span className="font-bold text-sm text-white">₹{spotlightProduct.price.toLocaleString()}</span>
+                                        <AddToCartWidget product={spotlightProduct} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 

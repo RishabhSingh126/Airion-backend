@@ -74,94 +74,11 @@ interface DashboardState {
 }
 
 export const useDashboardStore = create<DashboardState>((set) => ({
-    // Mock Data for Budget
-    totalBudget: 500000, // ₹5,00,000
-    budgetItems: [
-        { id: '1', category: 'Venue', allocated: 200000, spent: 180000, vendorName: 'Grand Hyatt', status: 'paid' },
-        { id: '2', category: 'Catering', allocated: 150000, spent: 45000, vendorName: 'Flavor Delight', status: 'pending' },
-        { id: '3', category: 'Photography', allocated: 80000, spent: 85000, vendorName: 'Pixel Perfect', status: 'over-budget' },
-        { id: '4', category: 'Decoration', allocated: 50000, spent: 0, status: 'pending' },
-        { id: '5', category: 'Music / DJ', allocated: 20000, spent: 10000, vendorName: 'DJ Rock', status: 'paid' }
-    ],
-
-    // Mock Bookings
-    bookings: [
-        {
-            id: 'B001',
-            vendorName: 'Grand Hyatt Venue',
-            category: 'Venue',
-            date: '2026-05-15',
-            time: '18:00',
-            status: 'Upcoming',
-            price: 180000,
-            paidAmount: 180000,
-            imageUrl: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=400&q=80',
-            location: 'Mumbai, MH',
-            emiAvailable: true
-        },
-        {
-            id: 'B002',
-            vendorName: 'Pixel Perfect Photography',
-            category: 'Photography',
-            date: '2026-05-15',
-            time: '10:00',
-            status: 'Pending',
-            price: 85000,
-            paidAmount: 25000,
-            imageUrl: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=400&q=80',
-            location: 'Mumbai, MH',
-            emiAvailable: false
-        },
-        {
-            id: 'B003',
-            vendorName: 'Flavor Delight Caterers',
-            category: 'Catering',
-            date: '2026-05-15',
-            time: '19:30',
-            status: 'Upcoming',
-            price: 150000,
-            paidAmount: 45000,
-            imageUrl: 'https://plus.unsplash.com/premium_photo-1672192166625-c1fda211498e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Rmxhdm9yJTIwRGVsaWdodHxlbnwwfHwwfHx8MA%3D%3D',
-            location: 'Mumbai, MH',
-            emiAvailable: true
-        }
-    ],
-
-    // Mock Notifications
-    notifications: [
-        { id: 'n1', title: 'Payment Success', message: 'You payment of ₹25,000 to Pixel Perfect is complete.', type: 'booking', date: '2 hours ago', read: false },
-        { id: 'n2', title: 'New Message', message: 'Grand Hyatt: "We details of your lighting request is ready."', type: 'chat', date: '1 day ago', read: false },
-        { id: 'n3', title: 'Discount Code', message: 'Get 20% off on Decoration packages today!', type: 'offer', date: '5 hours ago', read: true }
-    ],
-
-    // Mock Chats
-    chatThreads: [
-        {
-            id: 'c1',
-            vendorName: 'Grand Hyatt',
-            vendorAvatar: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=100&q=80',
-            lastMessage: 'The details of your lighting request is ready.',
-            timestamp: '15:30',
-            unread: true,
-            messages: [
-                { id: 'm1', sender: 'user', text: 'Hi, do you allow outside decorators?', timestamp: '14:00' },
-                { id: 'm2', sender: 'vendor', text: 'Yes we do, subject to a royalty fee.', timestamp: '14:15' },
-                { id: 'm3', sender: 'vendor', text: 'The details of your lighting request is ready.', timestamp: '15:30' }
-            ]
-        },
-        {
-            id: 'c2',
-            vendorName: 'Pixel Perfect',
-            vendorAvatar: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&w=100&q=80',
-            lastMessage: 'Looking forward to the event!',
-            timestamp: 'Yesterday',
-            unread: false,
-            messages: [
-                { id: 'm4', sender: 'user', text: 'Can we schedule a pre-shoot?', timestamp: 'Yesterday' },
-                { id: 'm5', sender: 'vendor', text: 'Absolutely! Looking forward to the event!', timestamp: 'Yesterday' }
-            ]
-        }
-    ],
+    totalBudget: 0,
+    budgetItems: [],
+    bookings: [],
+    notifications: [],
+    chatThreads: [],
 
     fetchBudget: async () => {
         try {

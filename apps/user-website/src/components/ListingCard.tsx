@@ -29,11 +29,11 @@ import { useCompare } from '../context/CompareContext';
 
 const ListingCard: React.FC<ListingCardProps> = ({
     id, images, image, title, rating, reviews, location, price, category,
-    tags = ['Verified', 'Premium'],
-    highlights = ['500+ Events Completed', 'Fast Response Time'],
-    isTrending = true,
-    marketplaceStatus = 'AVAILABLE',
-    spotsLeft = 42,
+    tags = [],
+    highlights = [],
+    isTrending = false,
+    marketplaceStatus,
+    spotsLeft,
     description = ''
 }) => {
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();

@@ -43,22 +43,9 @@ const MerchandiseOrders: React.FC = () => {
             setLoading(true);
             const res = await api.get('/merchandise/vendor/orders');
             const data = (res as any).data || res;
-            
-            const dummyOrders: OrderItem[] = [
-            { id: 'dummy-ord-1', quantity: 2, price: 1500, fulfillmentStatus: 'PENDING', trackingNumber: null, courierName: null, shippedAt: null, deliveredAt: null, order: { id: 'ORD-109485', createdAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), shippingAddress: '123 MG Road, Bangalore, 560001', user: { name: 'Aditi Sharma', email: 'aditi@example.com' } }, product: { title: 'Party Props Kit', image: 'https://images.unsplash.com/photo-1530103862676-de8892ebe653?auto=format&fit=crop&q=80&w=1000' } },
-            { id: 'dummy-ord-2', quantity: 1, price: 4500, fulfillmentStatus: 'SHIPPED', trackingNumber: 'BLUEDART-123456', courierName: 'BlueDart', shippedAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(), deliveredAt: null, order: { id: 'ORD-882194', createdAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(), shippingAddress: '456 Cyber Hub, Gurgaon, 122002', user: { name: 'Kunal Kapoor', email: 'kunal@example.com' } }, product: { title: 'Heavy Duty Fog Machine', image: 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&q=80&w=1000' } },
-            { id: 'dummy-ord-3', quantity: 10, price: 850, fulfillmentStatus: 'DELIVERED', trackingNumber: 'DTDC-884930', courierName: 'DTDC', shippedAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(), deliveredAt: new Date(new Date().setDate(new Date().getDate() - 8)).toISOString(), order: { id: 'ORD-294711', createdAt: new Date(new Date().setDate(new Date().getDate() - 12)).toISOString(), shippingAddress: '789 Jubilee Hills, Hyderabad, 500033', user: { name: 'Sneha Reddy', email: 'sneha@example.com' } }, product: { title: 'Gourmet Gift Hampers', image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=1000' } }
-            ];
-            
-            setItems((Array.isArray(data) && data.length > 0) ? data : dummyOrders);
+            setItems(Array.isArray(data) ? data : []);
         } catch (error) {
-            // toast.error('Failed to load orders.');
-            const dummyOrders: OrderItem[] = [
-            { id: 'dummy-ord-1', quantity: 2, price: 1500, fulfillmentStatus: 'PENDING', trackingNumber: null, courierName: null, shippedAt: null, deliveredAt: null, order: { id: 'ORD-109485', createdAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), shippingAddress: '123 MG Road, Bangalore, 560001', user: { name: 'Aditi Sharma', email: 'aditi@example.com' } }, product: { title: 'Party Props Kit', image: 'https://images.unsplash.com/photo-1530103862676-de8892ebe653?auto=format&fit=crop&q=80&w=1000' } },
-            { id: 'dummy-ord-2', quantity: 1, price: 4500, fulfillmentStatus: 'SHIPPED', trackingNumber: 'BLUEDART-123456', courierName: 'BlueDart', shippedAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(), deliveredAt: null, order: { id: 'ORD-882194', createdAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(), shippingAddress: '456 Cyber Hub, Gurgaon, 122002', user: { name: 'Kunal Kapoor', email: 'kunal@example.com' } }, product: { title: 'Heavy Duty Fog Machine', image: 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&q=80&w=1000' } },
-            { id: 'dummy-ord-3', quantity: 10, price: 850, fulfillmentStatus: 'DELIVERED', trackingNumber: 'DTDC-884930', courierName: 'DTDC', shippedAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(), deliveredAt: new Date(new Date().setDate(new Date().getDate() - 8)).toISOString(), order: { id: 'ORD-294711', createdAt: new Date(new Date().setDate(new Date().getDate() - 12)).toISOString(), shippingAddress: '789 Jubilee Hills, Hyderabad, 500033', user: { name: 'Sneha Reddy', email: 'sneha@example.com' } }, product: { title: 'Gourmet Gift Hampers', image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=1000' } }
-            ];
-            setItems(dummyOrders);
+            setItems([]);
         } finally {
             setLoading(false);
         }
@@ -80,19 +67,6 @@ const MerchandiseOrders: React.FC = () => {
             const courier = prompt('Enter Courier Name (Optional):');
             if (tracking) payload.trackingNumber = tracking;
             if (courier) payload.courierName = courier;
-        }
-
-        if (itemId.startsWith('dummy-ord-')) {
-            toast.success(`Marked as ${nextStatus}`);
-            setItems(prev => prev.map(item => item.id === itemId ? {
-                ...item,
-                fulfillmentStatus: nextStatus,
-                trackingNumber: payload.trackingNumber || item.trackingNumber,
-                courierName: payload.courierName || item.courierName,
-                shippedAt: nextStatus === 'SHIPPED' ? new Date().toISOString() : item.shippedAt,
-                deliveredAt: nextStatus === 'DELIVERED' ? new Date().toISOString() : item.deliveredAt,
-            } : item));
-            return;
         }
 
         try {

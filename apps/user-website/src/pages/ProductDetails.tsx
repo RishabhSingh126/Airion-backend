@@ -8,92 +8,6 @@ import { fetchProductById } from '../lib/api';
 import { useAuth } from '@ease2event/shared';
 import { useWishlist } from '../context/WishlistContext';
 
-const MOCK_PRODUCTS: Product[] = [
-    {
-        id: 'm1',
-        title: 'Premium LED Fairy Lights (50m)',
-        price: 1200,
-        category: 'Decor',
-        image: 'https://images.unsplash.com/photo-1729919561898-f4a994c90b0c?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-        id: 'm2',
-        title: 'Elegant Floral Centerpiece Set',
-        price: 4500,
-        category: 'Decor',
-        image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?q=80&w=600',
-    },
-    {
-        id: 'm3',
-        title: 'Personalized Welcome Sign (Acrylic)',
-        price: 3000,
-        category: 'Signage',
-        image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=600',
-    },
-    {
-        id: 'm4',
-        title: 'Bridal Squad Satin Robes (Pack of 5)',
-        price: 7500,
-        category: 'Apparel',
-        image: 'https://plus.unsplash.com/premium_photo-1706485734742-4a4153f34d2f?w=600&auto=format&fit=crop&q=80&w=600',
-    },
-    {
-        id: 'm5',
-        title: 'Vintage Photo Booth Props Kit',
-        price: 800,
-        category: 'Entertainment',
-        image: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=600',
-    },
-    {
-        id: 'm6',
-        title: 'Custom Engraved Champagne Flutes',
-        price: 2200,
-        category: 'Gifts',
-        image: 'https://images.unsplash.com/photo-1723431620052-46680a65c7b7?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-        id: 'm7',
-        title: 'Vintage Metal Lantern Candle Holder',
-        price: 1500,
-        category: 'Decor',
-        image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?q=80&w=600',
-    },
-    {
-        id: 'm8',
-        title: 'Groom & Groomsmen Bow Tie Set (Pack of 5)',
-        price: 3500,
-        category: 'Apparel',
-        image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600',
-    },
-    {
-        id: 'm9',
-        title: 'Golden Table Number Stands (Set of 1-20)',
-        price: 2500,
-        category: 'Signage',
-        image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600',
-    },
-    {
-        id: 'm10',
-        title: 'Handmade Scented Soy Candles (Box of 4)',
-        price: 1800,
-        category: 'Gifts',
-        image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?q=80&w=600',
-    },
-    {
-        id: 'm11',
-        title: 'Wireless LED Party Uplighter (Rechargeable)',
-        price: 5200,
-        category: 'Entertainment',
-        image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600',
-    },
-    {
-        id: 'm12',
-        title: 'Custom Wooden Photo Guestbook',
-        price: 2800,
-        category: 'Gifts',
-        image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600',
-    }
-];
 
 const WishlistButton: React.FC<{ productId: string }> = ({ productId }) => {
     const { user } = useAuth();
@@ -143,7 +57,7 @@ const ProductDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { items, addToCart, updateQuantity } = useCart();
-    const [product, setProduct] = useState<Product | undefined>(() => MOCK_PRODUCTS.find(p => p.id === id));
+    const [product, setProduct] = useState<Product | undefined>(undefined);
     const cartItem = items.find(i => i.id === product?.id);
     const [quantity, setQuantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
@@ -155,18 +69,21 @@ const ProductDetails: React.FC = () => {
         setLoading(true);
         fetchProductById(id)
             .then((res: any) => {
-                if (res) {
+                const data = res?.data || res;
+                if (data && data.id) {
                     setProduct({
-                        id: res.id,
-                        title: res.title,
-                        price: Number(res.price),
-                        category: res.category,
-                        image: res.image || 'https://images.unsplash.com/photo-1729919561898-f4a994c90b0c?w=600&auto=format&fit=crop&q=80'
+                        id: data.id,
+                        title: data.title,
+                        price: Number(data.price),
+                        category: data.category,
+                        image: data.image || 'https://images.unsplash.com/photo-1729919561898-f4a994c90b0c?w=600&auto=format&fit=crop&q=80'
                     });
+                } else {
+                    setProduct(undefined);
                 }
             })
             .catch(() => {
-                // fallback to mock already set in useState initializer
+                setProduct(undefined);
             })
             .finally(() => {
                 setLoading(false);

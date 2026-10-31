@@ -89,21 +89,9 @@ const Promotions: React.FC = () => {
         try {
             const data = await api.get('/ads/vendor/me') as any;
             const parsedData = Array.isArray(data) ? data : (data?.data || []);
-            
-            const dummyCampaigns: Ad[] = [
-                { id: 'ad-1', campaignName: 'Summer Wedding Promo', adType: 'sponsored', status: 'active', dailyBudget: 500, totalBudget: 5000, impressions: 12500, clicks: 450, startDate: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(), endDate: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString() },
-                { id: 'ad-2', campaignName: 'Corporate Event Package', adType: 'banner', status: 'pending', dailyBudget: 1000, totalBudget: 15000, impressions: 0, clicks: 0, startDate: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(), endDate: new Date(new Date().setDate(new Date().getDate() + 17)).toISOString() },
-                { id: 'ad-3', campaignName: 'Diwali Special Offer', adType: 'sponsored', status: 'paused', dailyBudget: 800, totalBudget: 8000, impressions: 45000, clicks: 1200, startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(), endDate: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString() }
-            ];
-            
-            setCampaigns(parsedData.length > 0 ? parsedData : dummyCampaigns);
+            setCampaigns(parsedData);
         } catch {
-            const dummyCampaigns: Ad[] = [
-                { id: 'ad-1', campaignName: 'Summer Wedding Promo', adType: 'sponsored', status: 'active', dailyBudget: 500, totalBudget: 5000, impressions: 12500, clicks: 450, startDate: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(), endDate: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString() },
-                { id: 'ad-2', campaignName: 'Corporate Event Package', adType: 'banner', status: 'pending', dailyBudget: 1000, totalBudget: 15000, impressions: 0, clicks: 0, startDate: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(), endDate: new Date(new Date().setDate(new Date().getDate() + 17)).toISOString() },
-                { id: 'ad-3', campaignName: 'Diwali Special Offer', adType: 'sponsored', status: 'paused', dailyBudget: 800, totalBudget: 8000, impressions: 45000, clicks: 1200, startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(), endDate: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString() }
-            ];
-            setCampaigns(dummyCampaigns);
+            setCampaigns([]);
         } finally {
             setLoading(false);
         }

@@ -76,13 +76,13 @@ const Analytics: React.FC = () => {
         return plansData.filter((p: any) => p.isActive && p.price > 0).sort((a: any, b: any) => b.priority - a.priority)[0] || plansData[0];
     }, [plansData]);
 
-    const safeStatsData = statsData || { totalEvents: 12450, pendingBookings: 32, upcomingBookings: 18, totalEarnings: 450000 };
+    const safeStatsData = statsData || { totalEvents: 0, pendingBookings: 0, upcomingBookings: 0, totalEarnings: 0 };
 
     const stats = useMemo(() => [
-        { label: 'Profile Views', value: safeStatsData?.totalEvents || '12450', change: '+12.4%', trend: 'up', icon: Eye, color: 'text-blue-500', shadow: 'shadow-blue-500/10' },
-        { label: 'Active Inquiries', value: safeStatsData?.pendingBookings || '32', change: '+5.2%', trend: 'up', icon: Users, color: 'text-indigo-500', shadow: 'shadow-indigo-500/10' },
-        { label: 'Upcoming Bookings', value: safeStatsData?.upcomingBookings || '18', change: '-2.1%', trend: 'down', icon: Zap, color: 'text-amber-500', shadow: 'shadow-amber-500/10' },
-        { label: 'Total Earnings', value: `₹${safeStatsData?.totalEarnings || '450000'}`, change: '+18.5%', trend: 'up', icon: IndianRupee, color: 'text-emerald-500', shadow: 'shadow-emerald-500/10' },
+        { label: 'Profile Views', value: safeStatsData?.totalEvents || 0, change: '', trend: 'up', icon: Eye, color: 'text-blue-500', shadow: 'shadow-blue-500/10' },
+        { label: 'Active Inquiries', value: safeStatsData?.pendingBookings || 0, change: '', trend: 'up', icon: Users, color: 'text-indigo-500', shadow: 'shadow-indigo-500/10' },
+        { label: 'Upcoming Bookings', value: safeStatsData?.upcomingBookings || 0, change: '', trend: 'up', icon: Zap, color: 'text-amber-500', shadow: 'shadow-amber-500/10' },
+        { label: 'Total Earnings', value: `₹${Number(safeStatsData?.totalEarnings || 0).toLocaleString()}`, change: '', trend: 'up', icon: IndianRupee, color: 'text-emerald-500', shadow: 'shadow-emerald-500/10' },
     ], [safeStatsData]);
 
     // 🛸 Performance Telemetry Flow
@@ -100,25 +100,18 @@ const Analytics: React.FC = () => {
             }));
         }
         return [
-            { name: 'Mon', views: 4000, inquiries: 24, capture: 12000 },
-            { name: 'Tue', views: 3000, inquiries: 13, capture: 8000 },
-            { name: 'Wed', views: 2000, inquiries: 98, capture: 45000 },
-            { name: 'Thu', views: 2780, inquiries: 39, capture: 15000 },
-            { name: 'Fri', views: 1890, inquiries: 48, capture: 22000 },
-            { name: 'Sat', views: 2390, inquiries: 38, capture: 31000 },
-            { name: 'Sun', views: 3490, inquiries: 43, capture: 28000 },
+            { name: 'Mon', views: 0, inquiries: 0, capture: 0 },
+            { name: 'Tue', views: 0, inquiries: 0, capture: 0 },
+            { name: 'Wed', views: 0, inquiries: 0, capture: 0 },
+            { name: 'Thu', views: 0, inquiries: 0, capture: 0 },
+            { name: 'Fri', views: 0, inquiries: 0, capture: 0 },
+            { name: 'Sat', views: 0, inquiries: 0, capture: 0 },
+            { name: 'Sun', views: 0, inquiries: 0, capture: 0 },
         ];
     }, [performanceDataRaw]);
 
     const topNodes = useMemo(() => {
-        if (statsData?.topNodes && statsData.topNodes.length > 0) {
-            return statsData.topNodes;
-        }
-        return [
-            { name: 'Premium Floral Stage Decor', bookings: 145, revenue: '₹3,50,000', occupancy: 85, status: 'Trending' },
-            { name: 'Corporate Catering (100 Pax)', bookings: 89, revenue: '₹4,20,000', occupancy: 65, status: 'Stable' },
-            { name: 'Pro DJ & Sound System', bookings: 210, revenue: '₹1,80,000', occupancy: 92, status: 'High Demand' },
-        ];
+        return statsData?.topNodes || [];
     }, [statsData]);
 
     const containerVariants: Variants = {
@@ -319,30 +312,36 @@ const Analytics: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                    {topNodes.map((node: any, i: number) => (
-                        <div key={i} className="space-y-6 sm:space-y-5 p-6 sm:p-6 bg-[var(--ease2event-bg-elevated)]/20 border border-[var(--ease2event-border-subtle)] rounded-[32px] sm:rounded-[40px] hover:bg-[var(--ease2event-bg-surface)] transition-all  group/node">
-                            <div className="flex justify-between items-start">
-                                <span className="text-xl sm:text-lg font-semibold text-[var(--ease2event-brand-primary)]/20 group-hover/node:text-[var(--ease2event-brand-primary)] transition-colors">0{i + 1}</span>
-                                <Badge className={`bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-semibold text-[8px] px-2 py-0.5`}>{node.status}</Badge>
-                            </div>
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-semibold text-[var(--ease2event-text-primary)] leading-tight">{node.name}</h3>
-                                <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
-                                    <div className="flex justify-between items-end">
-                                        <p className="text-[12px] sm:text-[12px] font-semibold text-[var(--ease2event-text-secondary)] leading-none">Usage Intensity</p>
-                                        <p className="text-base sm:text-lg font-bold text-[var(--ease2event-text-primary)] leading-none">{node.occupancy}%</p>
-                                    </div>
-                                    <div className="h-1.5 sm:h-2 w-full bg-[var(--ease2event-bg-elevated)] rounded-full overflow-hidden p-0.5">
-                                        <div style={{ width: `${node.occupancy}%` }} className="h-full bg-[var(--ease2event-brand-primary)] rounded-full " />
+                    {topNodes.length === 0 ? (
+                        <div className="col-span-full py-12 text-center text-xs text-[var(--ease2event-text-secondary)]">
+                            No performance records yet. Once clients book your services, top performing listings will be highlighted here.
+                        </div>
+                    ) : (
+                        topNodes.map((node: any, i: number) => (
+                            <div key={i} className="space-y-6 sm:space-y-5 p-6 sm:p-6 bg-[var(--ease2event-bg-elevated)]/20 border border-[var(--ease2event-border-subtle)] rounded-[32px] sm:rounded-[40px] hover:bg-[var(--ease2event-bg-surface)] transition-all  group/node">
+                                <div className="flex justify-between items-start">
+                                    <span className="text-xl sm:text-lg font-semibold text-[var(--ease2event-brand-primary)]/20 group-hover/node:text-[var(--ease2event-brand-primary)] transition-colors">0{i + 1}</span>
+                                    <Badge className={`bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-semibold text-[8px] px-2 py-0.5`}>{node.status}</Badge>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg sm:text-xl font-semibold text-[var(--ease2event-text-primary)] leading-tight">{node.name}</h3>
+                                    <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
+                                        <div className="flex justify-between items-end">
+                                            <p className="text-[12px] sm:text-[12px] font-semibold text-[var(--ease2event-text-secondary)] leading-none">Usage Intensity</p>
+                                            <p className="text-base sm:text-lg font-bold text-[var(--ease2event-text-primary)] leading-none">{node.occupancy}%</p>
+                                        </div>
+                                        <div className="h-1.5 sm:h-2 w-full bg-[var(--ease2event-bg-elevated)] rounded-full overflow-hidden p-0.5">
+                                            <div style={{ width: `${node.occupancy}%` }} className="h-full bg-[var(--ease2event-brand-primary)] rounded-full " />
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="pt-6 sm:pt-8 border-t border-[var(--ease2event-border-subtle)] flex justify-between items-center">
+                                    <p className="text-[10px] sm:text-sm font-semibold text-[var(--ease2event-text-secondary)]">{node.bookings} Bookings</p>
+                                    <p className="text-lg sm:text-xl font-bold text-[var(--ease2event-text-primary)]">{node.revenue}</p>
+                                </div>
                             </div>
-                            <div className="pt-6 sm:pt-8 border-t border-[var(--ease2event-border-subtle)] flex justify-between items-center">
-                                <p className="text-[10px] sm:text-sm font-semibold text-[var(--ease2event-text-secondary)]">{node.bookings} Bookings</p>
-                                <p className="text-lg sm:text-xl font-bold text-[var(--ease2event-text-primary)]">{node.revenue}</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </div>
         </div>

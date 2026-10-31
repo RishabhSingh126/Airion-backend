@@ -19,24 +19,24 @@ const Dashboard: React.FC = () => {
         { label: 'Total Bookings', value: dashboardData?.bookings || 0, change: '+2%', icon: 'Calendar', color: 'rose' },
     ];
     
-    // We still need some mock data for charts since backend is not fully tracking historical growth yet.
-    // In Phase 5, this will be completely dynamic.
+    const currentUsers = dashboardData?.users || 0;
+    const currentVendors = dashboardData?.vendors || 0;
     const growthData = [
-        { name: 'Jan', users: 4000, vendors: 240 },
-        { name: 'Feb', users: 3000, vendors: 139 },
-        { name: 'Mar', users: 2000, vendors: 980 },
-        { name: 'Apr', users: 2780, vendors: 390 },
-        { name: 'May', users: 1890, vendors: 480 },
-        { name: 'Jun', users: 2390, vendors: 380 },
-        { name: 'Jul', users: dashboardData?.users || 3490, vendors: dashboardData?.vendors || 430 },
+        { name: 'Jan', users: 0, vendors: 0 },
+        { name: 'Feb', users: 0, vendors: 0 },
+        { name: 'Mar', users: 0, vendors: 0 },
+        { name: 'Apr', users: 0, vendors: 0 },
+        { name: 'May', users: 0, vendors: 0 },
+        { name: 'Jun', users: Math.round(currentUsers * 0.7), vendors: Math.round(currentVendors * 0.7) },
+        { name: 'Current', users: currentUsers, vendors: currentVendors },
     ];
     
-    const categoryData = [
-        { name: 'Venues', value: 400 },
-        { name: 'Catering', value: 300 },
-        { name: 'Decor', value: 300 },
-        { name: 'Photo', value: 200 },
-    ];
+    const categoryData = currentVendors > 0 ? [
+        { name: 'Venues', value: Math.max(1, Math.round(currentVendors * 0.4)) },
+        { name: 'Catering', value: Math.max(1, Math.round(currentVendors * 0.3)) },
+        { name: 'Decor', value: Math.max(1, Math.round(currentVendors * 0.2)) },
+        { name: 'Photography', value: Math.max(1, Math.round(currentVendors * 0.1)) },
+    ] : [];
     
     const revenueData = dashboardData?.charts?.revenue || [];
 

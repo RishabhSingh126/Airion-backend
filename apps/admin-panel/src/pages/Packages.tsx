@@ -165,11 +165,11 @@ const Packages: React.FC = () => {
                                             <select 
                                                 value={inq.vendorId || ''} 
                                                 onChange={(e) => handleAssignVendor(inq.id, e.target.value)}
-                                                className="rounded-xl border border-gray-300 dark:border-slate-700 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+                                                className="rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
                                             >
-                                                <option value="" disabled>Select Vendor</option>
+                                                <option value="" disabled className="bg-white dark:bg-slate-800">Select Vendor</option>
                                                 {vendors.map((v: any) => (
-                                                    <option key={v.id} value={v.id}>{v.businessName}</option>
+                                                    <option key={v.id} value={v.id} className="bg-white dark:bg-slate-800">{v.businessName}</option>
                                                 ))}
                                             </select>
                                         </td>

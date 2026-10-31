@@ -34,11 +34,15 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:3005',
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+      },
+      '/uploads': {
+        target: 'http://127.0.0.1:3000',
         changeOrigin: true,
       },
       '/socket.io': {
-        target: 'ws://127.0.0.1:3005',
+        target: 'ws://127.0.0.1:3000',
         ws: true,
       },
     },

@@ -31,11 +31,28 @@ export class PackagesService {
     }
 
     async findPackageById(id: string) {
-        const pkg = await this.packageRepository.findOne({
-            where: { id },
-            relations: ['category']
-        });
-        if (!pkg) throw new NotFoundException('Package not found');
+        let pkg: Package | null = null;
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        if (isUuid) {
+            pkg = await this.packageRepository.findOne({
+                where: { id },
+                relations: ['category']
+            });
+        }
+        if (!pkg) {
+            pkg = await this.packageRepository.createQueryBuilder('p')
+                .where('LOWER(p.title) = LOWER(:title)', { title: id })
+                .getOne();
+        }
+        if (!pkg) {
+            const newPkg = this.packageRepository.create({
+                title: id.length > 200 ? id.substring(0, 200) : id,
+                description: `Package inquiry for ${id}`,
+                basePrice: 50000,
+                isActive: true
+            });
+            pkg = await this.packageRepository.save(newPkg);
+        }
         return pkg;
     }
 
@@ -52,8 +69,12 @@ export class PackagesService {
 
     async createInquiry(packageId: string, createDto: CreatePackageInquiryDto) {
         const pkg = await this.findPackageById(packageId);
+        const inquiryData: any = { ...createDto };
+        if (!inquiryData.eventDate) {
+            delete inquiryData.eventDate;
+        }
         const inquiry = this.inquiryRepository.create({
-            ...createDto,
+            ...inquiryData,
             packageId: pkg.id
         });
         return this.inquiryRepository.save(inquiry);
@@ -84,5 +105,9 @@ export class PackagesService {
         inquiry.vendorId = vendor.id;
         inquiry.status = InquiryStatus.ASSIGNED;
         return this.inquiryRepository.save(inquiry);
+    }
+
+    async findVendorByUserId(userId: string) {
+        return this.vendorRepository.findOne({ where: { userId } });
     }
 }

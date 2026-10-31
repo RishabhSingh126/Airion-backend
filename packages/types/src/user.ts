@@ -4,6 +4,7 @@ export enum UserRole {
   USER = 'user',
   VENDOR = 'vendor',
   ADMIN = 'admin',
+  SUPER_ADMIN = 'super_admin',
 }
 
 export const UserSchema = z.object({

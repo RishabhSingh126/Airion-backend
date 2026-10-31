@@ -102,6 +102,16 @@ export class VendorsService {
         return this.activityRepository.save(activity);
     }
 
+    private sanitizeVendor(vendor: Vendor): Vendor {
+        if (vendor && vendor.user) {
+            delete (vendor.user as any).password;
+            delete (vendor.user as any).mfaSecret;
+            delete (vendor.user as any).emailVerificationToken;
+            delete (vendor.user as any).passwordResetToken;
+        }
+        return vendor;
+    }
+
     async findOne(id: string): Promise<Vendor> {
         const vendor = await this.vendorRepository.findOne({
             where: { id },
@@ -112,7 +122,7 @@ export class VendorsService {
             throw new NotFoundException(`Vendor with ID ${id} not found`);
         }
 
-        return vendor;
+        return this.sanitizeVendor(vendor);
     }
 
     async findByUserId(userId: string): Promise<Vendor | null> {
@@ -127,7 +137,7 @@ export class VendorsService {
                 relations: ['user', 'category', 'subcategory', 'gallery', 'ads'],
             });
 
-            return vendor || null;
+            return vendor ? this.sanitizeVendor(vendor) : null;
         } catch (error) {
             console.error(`[VendorsService] Error finding vendor by userId: ${userId}`, error);
             // We return null instead of throwing to prevent 500 errors in "me" endpoints
@@ -145,7 +155,8 @@ export class VendorsService {
 
         Object.assign(vendor, updateVendorDto);
 
-        return this.vendorRepository.save(vendor);
+        const saved = await this.vendorRepository.save(vendor);
+        return this.sanitizeVendor(saved);
     }
 
     async findAll(options: { 
@@ -171,7 +182,7 @@ export class VendorsService {
         }
 
         const [vendors, total] = await query.getManyAndCount();
-        return { vendors, total };
+        return { vendors: vendors.map(v => this.sanitizeVendor(v)), total };
     }
 
     async getDiscovery(options: { 
@@ -187,11 +198,11 @@ export class VendorsService {
         const query = this.vendorRepository.createQueryBuilder('vendor')
             .leftJoinAndSelect('vendor.user', 'user')
             .leftJoinAndSelect('vendor.category', 'category')
-            .where('vendor.isVerified = :isVerified', { isVerified: true });
+            .where('(vendor.isVerified = true OR vendor.verificationStatus = :approvedStatus)', { approvedStatus: 'APPROVED' });
 
         // Apply Hard Filters First (Search filters are never bypassed)
         if (city) {
-            query.andWhere("vendor.businessAddress->>'city' ILIKE :city", { city: `%${city}%` });
+            query.andWhere("(vendor.city ILIKE :city OR vendor.businessAddress->>'city' ILIKE :city)", { city: `%${city}%` });
         }
         
         if (categoryId) {
@@ -216,7 +227,7 @@ export class VendorsService {
              .skip(offset);
 
         const [vendors, total] = await query.getManyAndCount();
-        return { vendors, total };
+        return { vendors: vendors.map(v => this.sanitizeVendor(v)), total };
     }
 
     async updateStatus(
@@ -310,8 +321,7 @@ export class VendorsService {
         const topServices = topServicesRaw.map(s => ({
             name: s.name,
             bookings: Number(s.bookings || 0),
-            revenue: `₹${Number(s.revenue || 0).toLocaleString('en-IN')}`,
-            occupancy: Math.floor(Math.random() * 20) + 70, // Mock occupancy for now
+            occupancy: Number(s.bookings || 0) > 0 ? Math.min(Number(s.bookings) * 10, 100) : 0,
             status: s.status ? 'Active' : 'Inactive'
         }));
 

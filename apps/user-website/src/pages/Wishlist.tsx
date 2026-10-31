@@ -5,21 +5,19 @@ import { fetchProducts } from '../lib/api';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '@ease2event/shared';
 import { Product } from '../context/CartContext';
-
-import { MOCK_PRODUCTS } from '../lib/mockProducts';
-
 import ListingCard from "../components/ListingCard";
 const WishlistPage: React.FC = () => {
     const { user } = useAuth();
     const { productWishlistIds, toggleProductWishlist, wishlist } = useWishlist();
-    const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchProducts()
             .then((res: any) => {
-                if (res && res.length > 0) {
-                    setProducts(res.map((p: any) => ({
+                const list = Array.isArray(res) ? res : (res?.data || []);
+                if (Array.isArray(list) && list.length > 0) {
+                    setProducts(list.map((p: any) => ({
                         id: p.id,
                         title: p.title,
                         price: Number(p.price),
@@ -27,10 +25,13 @@ const WishlistPage: React.FC = () => {
                         image: p.image || 'https://images.unsplash.com/photo-1729919561898-f4a994c90b0c?w=600&auto=format&fit=crop&q=80'
                     })));
                 } else {
-                    setProducts(MOCK_PRODUCTS);
+                    setProducts([]);
                 }
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                console.error(err);
+                setProducts([]);
+            })
             .finally(() => setLoading(false));
     }, []);
 

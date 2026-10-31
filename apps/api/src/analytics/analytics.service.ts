@@ -61,11 +61,6 @@ export class AnalyticsService {
         let usersCount = Number(totalUsers[0].count);
         let vendorsCount = Number(totalVendors[0].count);
 
-        // Dummy data fallback for local dev if DB is empty
-        if (usersCount === 0) usersCount = 4280;
-        if (vendorsCount === 0) vendorsCount = 356;
-        if (totalRevenue === 0) totalRevenue = 4500000;
-
         const commissionEarned = totalRevenue * 0.10; // 10% commission
 
         // We could also add charts data here, but for now just return the main stats + mocked charts

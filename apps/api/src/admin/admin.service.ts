@@ -166,20 +166,28 @@ export class AdminService {
         const vendorsCount = await this.vendorRepository.count();
         const bookingsCount = await this.bookingRepository.count();
         
+        const totalRevResult = await this.bookingRepository
+            .createQueryBuilder('booking')
+            .select('SUM(booking.totalAmount)', 'sum')
+            .where('booking.status IN (:...statuses)', { statuses: ['confirmed', 'completed'] })
+            .getRawOne();
+        const realRevenue = totalRevResult?.sum ? Number(totalRevResult.sum) : 0;
+        const commissionRevenue = realRevenue * 0.1;
+
         return {
             users: usersCount,
             vendors: vendorsCount,
             bookings: bookingsCount,
-            revenue: 125000,
-            advertisementRevenue: 45000,
-            subscriptionRevenue: 55000,
-            commissionRevenue: 25000,
+            revenue: realRevenue,
+            advertisementRevenue: 0,
+            subscriptionRevenue: 0,
+            commissionRevenue: commissionRevenue,
             charts: {
                 revenue: [
-                    { name: 'Week 1', adRevenue: 15000, subRevenue: 32000, commission: 8500 },
-                    { name: 'Week 2', adRevenue: 18000, subRevenue: 38000, commission: 11200 },
-                    { name: 'Week 3', adRevenue: 12000, subRevenue: 29000, commission: 7200 },
-                    { name: 'Week 4', adRevenue: 22000, subRevenue: 45000, commission: 14500 },
+                    { name: 'Week 1', adRevenue: 0, subRevenue: 0, commission: 0 },
+                    { name: 'Week 2', adRevenue: 0, subRevenue: 0, commission: 0 },
+                    { name: 'Week 3', adRevenue: 0, subRevenue: 0, commission: 0 },
+                    { name: 'Week 4', adRevenue: 0, subRevenue: 0, commission: commissionRevenue },
                 ]
             },
             suspiciousLogins: [],
@@ -207,47 +215,48 @@ export class AdminService {
             city: v.city || 'Unknown'
         }));
 
-        // Generate beautiful mock data for analytics/reports
-        const mockRevenueData = timeRange === 'Week' ? [
-            { name: 'Mon', adRevenue: 2400, subRevenue: 4500, commission: 1200 },
-            { name: 'Tue', adRevenue: 3500, subRevenue: 5200, commission: 1800 },
-            { name: 'Wed', adRevenue: 3000, subRevenue: 4800, commission: 1500 },
-            { name: 'Thu', adRevenue: 4800, subRevenue: 6100, commission: 2200 },
-            { name: 'Fri', adRevenue: 6000, subRevenue: 7500, commission: 3100 },
-            { name: 'Sat', adRevenue: 7200, subRevenue: 9000, commission: 3800 },
-            { name: 'Sun', adRevenue: 5500, subRevenue: 7000, commission: 2800 },
+        const totalRevResult = await this.bookingRepository
+            .createQueryBuilder('booking')
+            .select('SUM(booking.totalAmount)', 'sum')
+            .where('booking.status IN (:...statuses)', { statuses: ['confirmed', 'completed'] })
+            .getRawOne();
+        const totalRevenue = totalRevResult?.sum ? Number(totalRevResult.sum) : 0;
+        const totalComm = totalRevenue * 0.1;
+
+        const revenueData = timeRange === 'Week' ? [
+            { name: 'Mon', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Tue', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Wed', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Thu', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Fri', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Sat', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Sun', adRevenue: 0, subRevenue: 0, commission: totalComm },
         ] : timeRange === 'Year' ? [
-            { name: '2021', adRevenue: 120000, subRevenue: 340000, commission: 85000 },
-            { name: '2022', adRevenue: 180000, subRevenue: 490000, commission: 125000 },
-            { name: '2023', adRevenue: 240000, subRevenue: 650000, commission: 195000 },
-            { name: '2024', adRevenue: 310000, subRevenue: 820000, commission: 260000 },
-            { name: '2025', adRevenue: 450000, subRevenue: 1200000, commission: 380000 },
+            { name: '2023', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: '2024', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: '2025', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: '2026', adRevenue: 0, subRevenue: 0, commission: totalComm },
         ] : [
-            { name: 'Week 1', adRevenue: 15000, subRevenue: 32000, commission: 8500 },
-            { name: 'Week 2', adRevenue: 18000, subRevenue: 38000, commission: 11200 },
-            { name: 'Week 3', adRevenue: 12000, subRevenue: 29000, commission: 7200 },
-            { name: 'Week 4', adRevenue: 22000, subRevenue: 45000, commission: 14500 },
+            { name: 'Week 1', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Week 2', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Week 3', adRevenue: 0, subRevenue: 0, commission: 0 },
+            { name: 'Week 4', adRevenue: 0, subRevenue: 0, commission: totalComm },
         ];
 
-        const mockConversionData = [
-            { name: 'Wedding', rate: 68 },
-            { name: 'Corporate', rate: 52 },
-            { name: 'Birthday', rate: 45 },
-            { name: 'Concert', rate: 30 },
-            { name: 'Exhibition', rate: 25 },
+        const conversionData = [
+            { name: 'Wedding', rate: 0 },
+            { name: 'Corporate', rate: 0 },
+            { name: 'Birthday', rate: 0 },
+            { name: 'Concert', rate: 0 },
+            { name: 'Exhibition', rate: 0 },
         ];
-
-        // Sum up total stats for the response
-        const totalAd = mockRevenueData.reduce((acc, curr) => acc + curr.adRevenue, 0);
-        const totalSub = mockRevenueData.reduce((acc, curr) => acc + curr.subRevenue, 0);
-        const totalComm = mockRevenueData.reduce((acc, curr) => acc + curr.commission, 0);
 
         return {
-            totalRevenue: totalAd + totalSub + totalComm,
+            totalRevenue,
             commissionEarned: totalComm,
-            avgConversionRate: 44, // Average of conversion rate percentages
-            revenueData: mockRevenueData,
-            conversionData: mockConversionData,
+            avgConversionRate: 0,
+            revenueData,
+            conversionData,
             topVendors
         };
     }

@@ -77,19 +77,9 @@ const ProfileSettings: React.FC = () => {
         try {
           const res = await api.get(`/categories/${businessData.categoryId}/subcategories`) as any;
           const subs = res.data || res;
-          if (subs && subs.length > 0) {
-            setSubcategories(subs);
-          } else {
-            throw new Error('No subcategories');
-          }
+          setSubcategories(Array.isArray(subs) ? subs : []);
         } catch (err) {
-          const dummySubs: any = {
-            '1': [{ id: '101', name: 'Banquet Halls' }, { id: '102', name: 'Open Lawns' }, { id: '103', name: 'Resorts' }],
-            '2': [{ id: '201', name: 'Multi-Cuisine' }, { id: '202', name: 'Desserts & Bakers' }],
-            '3': [{ id: '301', name: 'Candid Photography' }, { id: '302', name: 'Cinematography' }],
-            '4': [{ id: '401', name: 'Floral Decor' }, { id: '402', name: 'Lighting & AV' }]
-          };
-          setSubcategories(dummySubs[businessData.categoryId] || []);
+          setSubcategories([]);
         }
       };
       fetchSubs();

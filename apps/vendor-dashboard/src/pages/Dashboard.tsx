@@ -9,19 +9,19 @@ import api from '../lib/api';
 import { Skeleton, Badge, Avatar, Button } from '@ease2event/ui';
 import toast from 'react-hot-toast';
 
-const MOCK_CHART_DATA = [
- { name: 'Jan', revenue: 42000 },
- { name: 'Feb', revenue: 38000 },
- { name: 'Mar', revenue: 65000 },
- { name: 'Apr', revenue: 82000 },
- { name: 'May', revenue: 95000 },
- { name: 'Jun', revenue: 88000 },
- { name: 'Jul', revenue: 92000 },
- { name: 'Aug', revenue: 115000 },
- { name: 'Sep', revenue: 132000 },
- { name: 'Oct', revenue: 145000 },
- { name: 'Nov', revenue: 185000 },
- { name: 'Dec', revenue: 210000 },
+const EMPTY_CHART_DATA = [
+ { name: 'Jan', revenue: 0 },
+ { name: 'Feb', revenue: 0 },
+ { name: 'Mar', revenue: 0 },
+ { name: 'Apr', revenue: 0 },
+ { name: 'May', revenue: 0 },
+ { name: 'Jun', revenue: 0 },
+ { name: 'Jul', revenue: 0 },
+ { name: 'Aug', revenue: 0 },
+ { name: 'Sep', revenue: 0 },
+ { name: 'Oct', revenue: 0 },
+ { name: 'Nov', revenue: 0 },
+ { name: 'Dec', revenue: 0 },
 ];
 
 /**
@@ -63,14 +63,14 @@ const StatCard = ({ title, value, trend, direction, icon: Icon, isLoading, curre
 const Dashboard = () => {
  const navigate = useNavigate();
  const { user } = useAuth();
- const vendorId = user?.vendor?.id || 'mock-id';
+ const vendorId = user?.vendor?.id;
  const [selectedYear, setSelectedYear] = React.useState(new Date().getFullYear());
  const availableYears = [new Date().getFullYear(), new Date().getFullYear() - 1, new Date().getFullYear() - 2, new Date().getFullYear() - 3, new Date().getFullYear() - 4];
 
  const { data: stats, isLoading: statsLoading } = useQuery({
  queryKey: ['vendor-stats', vendorId],
  queryFn: async () => {
- if (!vendorId || vendorId === 'mock-id') return null;
+ if (!vendorId) return null;
  try {
  const res: any = await api.get(`/vendors/${vendorId}/stats/bookings`);
  return {
@@ -84,13 +84,13 @@ const Dashboard = () => {
  return { activeEnquiries: 0, totalListings: 0, confirmedBookings: 0, revenue: '0' };
  }
  },
- enabled: vendorId !== 'mock-id',
+ enabled: !!vendorId,
  });
 
  const { data: earningsData } = useQuery({
  queryKey: ['vendor-earnings', vendorId, selectedYear],
  queryFn: async () => {
- if (!vendorId || vendorId === 'mock-id') return null;
+ if (!vendorId) return null;
  try {
  const res: any = await api.get(`/vendors/${vendorId}/earnings?year=${selectedYear}`);
  return res;
@@ -98,13 +98,13 @@ const Dashboard = () => {
  return null;
  }
  },
- enabled: vendorId !== 'mock-id',
+ enabled: !!vendorId,
  });
 
  const { data: rawProfileViewsData } = useQuery({
  queryKey: ['vendor-profile-views', vendorId],
  queryFn: async () => {
- if (!vendorId || vendorId === 'mock-id') return null;
+ if (!vendorId) return null;
  try {
  const res: any = await api.get('/vendors/me/profile-views');
  return res;
@@ -112,32 +112,26 @@ const Dashboard = () => {
  return null;
  }
  },
- enabled: vendorId !== 'mock-id',
+ enabled: !!vendorId,
  });
 
- // --- REALISTIC DUMMY DATA FALLBACKS ---
- const displayStats = stats?.totalListings > 0 ? stats : {
- activeEnquiries: 14,
- totalListings: 8,
- confirmedBookings: 23,
- revenue: '1,285,000'
+ // Real data defaults
+ const displayStats = stats || {
+ activeEnquiries: 0,
+ totalListings: 0,
+ confirmedBookings: 0,
+ revenue: '0'
  };
 
- const profileViewsData = rawProfileViewsData?.totalUniqueViews > 0 ? rawProfileViewsData : {
- totalUniqueViews: 14532,
- todayUniqueViews: 84,
- weekUniqueViews: 543,
- monthUniqueViews: 2145
+ const profileViewsData = rawProfileViewsData || {
+ totalUniqueViews: 0,
+ todayUniqueViews: 0,
+ weekUniqueViews: 0,
+ monthUniqueViews: 0
  };
 
- const chartData = earningsData?.monthlyStats?.length ? earningsData.monthlyStats : MOCK_CHART_DATA;
- const enquiriesList = earningsData?.recentTransactions?.slice(0, 3) || [];
-
- const mockEnquiries = [
- { name: 'Aditi Sharma', event: 'Premium Wedding Decoration', time: '20 mins ago', avatar: 'A' },
- { name: 'Kunal Kapoor', event: 'Corporate Annual Gala', time: '2 hrs ago', avatar: 'K' },
- { name: 'Priya Desai', event: 'Engagement Party Catering', time: '5 hrs ago', avatar: 'P' },
- ];
+ const chartData = earningsData?.monthlyStats?.length ? earningsData.monthlyStats : EMPTY_CHART_DATA;
+ const enquiriesList = earningsData?.recentTransactions?.slice(0, 5) || [];
 
  const handleExport = () => {
  const csvHeader = "Month,Revenue\n";
@@ -221,7 +215,7 @@ const Dashboard = () => {
  <div className="card-minimal p-5 rounded-xl border border-[var(--ease2event-border-subtle)] bg-white dark:bg-slate-900 space-y-6">
  <div className="flex justify-between items-center">
  <h2 className="text-sm font-bold text-[var(--ease2event-text-secondary)]">Recent Enquiries</h2>
- <span className="chip px-3 py-1 text-[10px] font-bold rounded-full border border-blue-500/30 text-blue-600 bg-blue-50 dark:bg-blue-500/10">4 Active</span>
+ <span className="chip px-3 py-1 text-[10px] font-bold rounded-full border border-blue-500/30 text-blue-600 bg-blue-50 dark:bg-blue-500/10">{displayStats.activeEnquiries} Active</span>
  </div>
 
  <div className="space-y-4">
@@ -239,18 +233,9 @@ const Dashboard = () => {
  </div>
  ))
  ) : (
- mockEnquiries.map((e, i) => (
- <div key={i} onClick={() => navigate('/enquiries')} className="cursor-pointer flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
- <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-sm text-[var(--ease2event-text-primary)]">
- {e.avatar}
+ <div className="py-6 text-center text-xs text-neutral-400">
+ No customer enquiries yet. Inquiries will appear here once received.
  </div>
- <div className="flex-1 min-w-0">
- <h4 className="text-sm font-bold text-[var(--ease2event-text-primary)] tracking-tight truncate">{e.name}</h4>
- <p className="text-xs text-[var(--ease2event-text-secondary)] font-medium truncate">{e.event} • <span className="text-blue-600 font-semibold">{e.time}</span></p>
- </div>
-
- </div>
- ))
  )}
  </div>
 
@@ -387,19 +372,19 @@ const Dashboard = () => {
  <div className="flex justify-between items-start z-10">
  <CalendarIcon size={32} className="text-white/80" />
  <div className="text-right">
- <p className="text-xs font-semibold opacity-70">Next Event</p>
- <p className="text-lg font-bold mt-1 leading-none">JAN 20, 2026</p>
+ <p className="text-xs font-semibold opacity-70">Schedule</p>
+ <p className="text-lg font-bold mt-1 leading-none">{displayStats.confirmedBookings > 0 ? `${displayStats.confirmedBookings} Bookings` : 'No events'}</p>
  </div>
  </div>
  <div className="z-10 space-y-2">
- <h3 className="text-xl font-bold leading-none">Big Hall Event</h3>
- <p className="text-xs font-medium opacity-80">12 tasks pending completion for this service</p>
+ <h3 className="text-xl font-bold leading-none">{displayStats.confirmedBookings > 0 ? 'Upcoming Bookings' : 'Ready for Bookings'}</h3>
+ <p className="text-xs font-medium opacity-80">{displayStats.confirmedBookings > 0 ? 'Check your bookings calendar to manage scheduled events' : 'Publish packages and services to start receiving client bookings'}</p>
  </div>
  <button
  onClick={() => navigate('/bookings')}
  className="cursor-pointer flex items-center justify-between w-full h-10 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg px-4 text-sm font-bold transition-all backdrop-blur-sm z-10"
  >
- View Details <ChevronRight size={18} />
+ View Bookings <ChevronRight size={18} />
  </button>
  </div>
  </div>

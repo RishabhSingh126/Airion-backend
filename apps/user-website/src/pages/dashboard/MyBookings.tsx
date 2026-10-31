@@ -10,41 +10,6 @@ import { fetchMyBookings } from '../../lib/api';
 import ReviewModal from '../../components/ReviewModal';
 import toast from 'react-hot-toast';
 
-const MOCK_BOOKINGS = [
-    {
-        id: '1',
-        bookingCode: 'E2E-847291',
-        eventDate: new Date(Date.now() + 864000000).toISOString(),
-        status: 'confirmed',
-        totalAmount: '250000',
-        vendor: { businessName: 'Royal Palace Events', city: 'Jaipur', portfolioImages: ['https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80'] }
-    },
-    {
-        id: '2',
-        bookingCode: 'E2E-392104',
-        eventDate: new Date(Date.now() + 1728000000).toISOString(),
-        status: 'pending',
-        totalAmount: '45000',
-        vendor: { businessName: 'Aura Photography', city: 'Mumbai', portfolioImages: ['https://images.unsplash.com/photo-1614447413359-5f87a652a269?w=600'] }
-    },
-    {
-        id: '3',
-        bookingCode: 'E2E-109482',
-        eventDate: new Date(Date.now() - 2592000000).toISOString(),
-        status: 'completed',
-        totalAmount: '120000',
-        vendor: { businessName: 'Gourmet Catering Co.', city: 'Delhi', portfolioImages: ['https://images.unsplash.com/photo-1555244162-803834f70033?q=80'] }
-    },
-    {
-        id: '4',
-        bookingCode: 'E2E-558291',
-        eventDate: new Date(Date.now() - 500000000).toISOString(),
-        status: 'cancelled',
-        totalAmount: '80000',
-        vendor: { businessName: 'Elite Decorators', city: 'Bangalore', portfolioImages: ['https://images.unsplash.com/photo-1616137422495-1e9e46e2aa77?w=600'] }
-    }
-];
-
 /* ─── Refund Modal ─── */
 const RefundModal: React.FC<{
     booking: any;
@@ -137,9 +102,9 @@ const MyBookings: React.FC = () => {
         const loadBookings = async () => {
             try {
                 const data = await fetchMyBookings();
-                setBookings(data && data.length > 0 ? data : MOCK_BOOKINGS);
+                setBookings(Array.isArray(data) ? data : []);
             } catch {
-                setBookings(MOCK_BOOKINGS);
+                setBookings([]);
             } finally {
                 setLoading(false);
             }

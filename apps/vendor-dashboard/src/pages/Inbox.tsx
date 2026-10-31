@@ -26,15 +26,7 @@ const Inbox: React.FC = () => {
  queryFn: () => leadService.getVendorLeads().catch(() => []),
  });
 
- const dummyLeads = [
- { id: 'lead-1', userId: 'user-1', user: { name: 'Aditi Sharma', id: 'user-1' }, notes: 'Looking for a premium floral decoration for my wedding next month.', status: 'pending', aiScore: 85, createdAt: new Date().toISOString(), eventDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(), guestsCount: 500, budget: 150000, aiReasoning: 'High intent user based on budget and date proximity.' },
- { id: 'lead-2', userId: 'user-2', user: { name: 'Kunal Kapoor', id: 'user-2' }, notes: 'Interested in the corporate event catering package for our annual gala.', status: 'pending', aiScore: 92, createdAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), eventDate: new Date(new Date().setDate(new Date().getDate() + 45)).toISOString(), guestsCount: 800, budget: 350000, aiReasoning: 'Corporate client with a large budget and guest list.' },
- { id: 'lead-3', userId: 'user-3', user: { name: 'Priya Desai', id: 'user-3' }, notes: 'Need a DJ and sound system for my engagement party.', status: 'contacted', aiScore: 60, createdAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(), eventDate: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(), guestsCount: 150, budget: 45000, aiReasoning: 'Standard engagement party inquiry.' },
- { id: 'lead-4', userId: 'user-4', user: { name: 'Sneha Reddy', id: 'user-4' }, notes: 'Can you provide a custom decoration quote for a birthday party?', status: 'pending', aiScore: 45, createdAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(), eventDate: new Date(new Date().setDate(new Date().getDate() + 10)).toISOString(), guestsCount: 50, budget: 20000, aiReasoning: 'Low budget, short notice.' },
- { id: 'lead-5', userId: 'user-5', user: { name: 'Rohan Mehta', id: 'user-5' }, notes: 'We are planning a destination wedding and need full catering services.', status: 'contacted', aiScore: 88, createdAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(), eventDate: new Date(new Date().setDate(new Date().getDate() + 120)).toISOString(), guestsCount: 1000, budget: 850000, aiReasoning: 'High value lead with plenty of planning time.' }
- ];
-
- const leads = (apiLeads && apiLeads.length > 0) ? apiLeads : dummyLeads;
+ const leads = apiLeads || [];
 
  const activeLead = leads?.find(lead => lead.id === activeChat);
  const filteredChats = (leads || []).filter(lead =>
@@ -163,6 +155,10 @@ const Inbox: React.FC = () => {
  <div className="flex-1 overflow-y-auto scrollbar-hide">
  {isLoading ? (
  <div className="p-5 text-center text-sm font-bold uppercase tracking-widest opacity-40">Searching for enquiries...</div>
+ ) : filteredChats.length === 0 ? (
+ <div className="p-8 text-center text-xs text-[var(--ease2event-text-secondary)]">
+ No customer enquiries yet. Client messages and booking enquiries will appear here.
+ </div>
  ) : (
  filteredChats.map((lead, index) => (
  <div

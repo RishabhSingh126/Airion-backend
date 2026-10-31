@@ -35,12 +35,19 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, { logger });
 
     // Security Headers & Performance
-    app.use(helmet());
+    app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
     const compression = require('compression');
     app.use(compression());
 
     // Increase JSON body limit for Base64 image uploads
     const express = require('express');
+    const fs = require('fs');
+    const path = require('path');
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    app.use('/uploads', express.static(uploadsDir));
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ limit: '50mb', extended: true }));
 

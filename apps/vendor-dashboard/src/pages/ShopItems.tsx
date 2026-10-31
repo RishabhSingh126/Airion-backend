@@ -48,25 +48,10 @@ const ShopItems: React.FC = () => {
             setLoading(true);
             const res = await api.get('/merchandise', { params: { vendorId } });
             const data = (res as any).data || res;
-            
-            const dummyShopItems: ShopItem[] = [
-            { id: 'shop-1', title: 'Party Props Kit', description: 'Fun and quirky props for photobooths. Includes 50+ items like hats, glasses, and signs.', price: 1500, image: 'https://images.unsplash.com/photo-1530103862676-de8892ebe653?auto=format&fit=crop&q=80&w=1000', category: 'Accessories', stock: 25, approvalStatus: 'approved' },
-            { id: 'shop-2', title: 'Heavy Duty Fog Machine', description: 'Professional grade fog machine for stage and dance floors. Remote controlled.', price: 4500, image: 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&q=80&w=1000', category: 'Entertainment', stock: 5, approvalStatus: 'approved' },
-            { id: 'shop-3', title: 'Vintage Welcome Sign', description: 'Customizable rustic wooden welcome sign with easel stand for weddings.', price: 3200, image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&q=80&w=1000', category: 'Signage', stock: 12, approvalStatus: 'pending' },
-            { id: 'shop-4', title: 'Gourmet Gift Hampers', description: 'Premium corporate or wedding favors. Includes assorted chocolates, nuts, and exotic teas.', price: 850, image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=1000', category: 'Gifts', stock: 100, approvalStatus: 'approved' }
-            ];
-            
-            setItems((Array.isArray(data) && data.length > 0) ? data : dummyShopItems);
+            setItems(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Failed to fetch shop items:", error);
-            // toast.error("Could not load your shop items.");
-            const dummyShopItems: ShopItem[] = [
-            { id: 'shop-1', title: 'Party Props Kit', description: 'Fun and quirky props for photobooths. Includes 50+ items like hats, glasses, and signs.', price: 1500, image: 'https://images.unsplash.com/photo-1530103862676-de8892ebe653?auto=format&fit=crop&q=80&w=1000', category: 'Accessories', stock: 25, approvalStatus: 'approved' },
-            { id: 'shop-2', title: 'Heavy Duty Fog Machine', description: 'Professional grade fog machine for stage and dance floors. Remote controlled.', price: 4500, image: 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&q=80&w=1000', category: 'Entertainment', stock: 5, approvalStatus: 'approved' },
-            { id: 'shop-3', title: 'Vintage Welcome Sign', description: 'Customizable rustic wooden welcome sign with easel stand for weddings.', price: 3200, image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&q=80&w=1000', category: 'Signage', stock: 12, approvalStatus: 'pending' },
-            { id: 'shop-4', title: 'Gourmet Gift Hampers', description: 'Premium corporate or wedding favors. Includes assorted chocolates, nuts, and exotic teas.', price: 850, image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=1000', category: 'Gifts', stock: 100, approvalStatus: 'approved' }
-            ];
-            setItems(dummyShopItems);
+            setItems([]);
         } finally {
             setLoading(false);
         }

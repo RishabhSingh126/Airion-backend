@@ -67,212 +67,95 @@ api.interceptors.response.use(
 
 export default api;
 
-// 🎭 Robust & Premium Mock Repository (12 Items) - UPGRADED TO HD IMAGES
-const mockServices = [
-    // WEDDINGS
-    { id: 'w-1', title: 'The Royal Grand Palace', category: 'Weddings', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2000&auto=format&fit=crop', rating: 4.9, location: 'Rajasthan', reviews: 156, price: '₹3,50,000', description: 'Experience royal luxury in a heritage palace setting. Perfect for grand destination weddings.', amenities: ['Parking', 'AC', 'Catering', 'Stage', 'Decor', 'Wifi', 'Bar', 'Pool'], capacity: '500+ guests' },
-    { id: 'w-2', title: 'Emerald Garden Estate', category: 'Weddings', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000&auto=format&fit=crop', rating: 4.8, location: 'South Delhi', reviews: 210, price: '₹4,20,000', description: 'A lush green oasis for a magical garden wedding.', amenities: ['Parking', 'Catering', 'Bar', 'Pool', 'Wifi', 'AC', 'Decor'], capacity: '300 guests' },
-    { id: 'w-3', title: 'Sunset Beach Resort', category: 'Weddings', image: 'https://images.unsplash.com/photo-1515232389446-a17ce9ca7434?q=80&w=2000&auto=format&fit=crop', rating: 4.7, location: 'Goa', reviews: 89, price: '₹2,80,000', description: 'Intimate beach wedding venue with stunning Arabian Sea views.', amenities: ['Wifi', 'AC', 'Pool', 'Bar', 'Parking', 'Catering'], capacity: '150 guests' },
-    { id: 'w-4', title: 'Crystal Ballroom Luxe', category: 'Weddings', image: 'https://images.unsplash.com/photo-1707374661682-d804856cee22?q=80&w=2000&auto=format&fit=crop', rating: 4.6, location: 'Mumbai', reviews: 145, price: '₹1,50,000', description: 'Ultra-modern ballroom for high-profile weddings in Mumbai.', amenities: ['Wifi', 'Parking', 'AC', 'Stage', 'Catering', 'Decor', 'Bar'], capacity: '200 guests' },
-
-    // PARTIES
-    { id: 'p-1', title: 'Neon Sky Lounge', category: 'Parties', image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2000&auto=format&fit=crop', rating: 4.5, location: 'Bangalore', reviews: 320, price: '₹65,000', description: 'Vibrant rooftop lounge for birthdays and high-energy music nights.', amenities: ['Wifi', 'AC', 'Bar', 'Stage', 'Decor', 'Parking', 'Catering'], capacity: '100 guests' },
-    { id: 'p-2', title: 'Aqua Poolside Deck', category: 'Parties', image: 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?q=80&w=2000&auto=format&fit=crop', rating: 4.4, location: 'Mumbai', reviews: 178, price: '₹95,000', description: 'Floating bar and DJ setup for ultimate poolside summer vibes.', amenities: ['Parking', 'Pool', 'Bar', 'Wifi', 'Decor', 'AC', 'Catering'], capacity: '80 guests' },
-    { id: 'p-3', title: 'Rustic Wine Loft', category: 'Parties', image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=2000&auto=format&fit=crop', rating: 4.8, location: 'Pune', reviews: 64, price: '₹45,000', description: 'Charming rustic loft for intimate gatherings and private celebrations.', amenities: ['Wifi', 'Catering', 'Decor', 'AC'], capacity: '40 guests' },
-    { id: 'p-4', title: 'The Retro Club Hub', category: 'Parties', image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2000&auto=format&fit=crop', rating: 4.6, location: 'Kolkata', reviews: 240, price: '₹75,000', description: 'Vintage-themed club for themed parties and nostalgic celebrations.', amenities: ['AC', 'Bar', 'Stage', 'Parking', 'Decor'], capacity: '120 guests' },
-
-    // CORPORATE
-    { id: 'c-1', title: 'Zenith Business Center', category: 'Corporate', image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=2000&auto=format&fit=crop', rating: 4.9, location: 'Gurgaon', reviews: 412, price: '₹1,50,000', description: 'Equipped with fiber-optic Wi-Fi and 4K projectors for international seminars.', amenities: ['Wifi', 'AC', 'Parking', 'Stage', 'Catering', 'Decor'], capacity: '250 guests' },
-    { id: 'c-2', title: 'The Boardroom Oasis', category: 'Corporate', image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?q=80&w=2000&auto=format&fit=crop', rating: 4.7, location: 'Hyderabad', reviews: 134, price: '₹40,000', description: 'Professional environment for high-stakes board meetings.', amenities: ['Wifi', 'AC', 'Catering'], capacity: '20 guests' },
-    { id: 'c-3', title: 'Innovation Nexus Hall', category: 'Corporate', image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2000&auto=format&fit=crop', rating: 4.8, location: 'Bangalore', reviews: 92, price: '₹2,20,000', description: 'Modern auditorium designed for product launches and tech conferences.', amenities: ['Wifi', 'AC', 'Parking', 'Stage'], capacity: '400 guests' },
-    { id: 'c-4', title: 'Crystal Summit Suite', category: 'Corporate', image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNvcnBvcmF0ZSUyMGV2ZW50fGVufDB8fDB8fHww', rating: 4.5, location: 'Kolkata', reviews: 55, price: '₹1,10,000', description: 'Sleek, minimalist space ideal for networking events and workshops.', amenities: ['Wifi', 'AC', 'Catering', 'Decor'], capacity: '60 guests' },
-
-    // BIRTHDAY
-    { id: 'b-1', title: 'Candy Sky Party Zone', category: 'Birthday', image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=2000&auto=format&fit=crop', rating: 4.7, location: 'Mumbai', reviews: 198, price: '₹35,000', description: 'Fun-filled birthday venue with themed decor packages for all ages.', amenities: ['Wifi', 'Parking', 'Decor', 'Catering', 'AC', 'Stage'], capacity: '50 guests' },
-    { id: 'b-2', title: 'Rainbow Fiesta Hall', category: 'Birthday', image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=2000&auto=format&fit=crop', rating: 4.5, location: 'Pune', reviews: 142, price: '₹25,000', description: 'Vibrant, colorful space perfect for kids and family birthday parties.', amenities: ['Parking', 'Decor', 'Catering', 'Wifi', 'AC'], capacity: '30 guests' },
-
-    // ENGAGEMENT
-    { id: 'e-1', title: 'Rose Garden Pavilion', category: 'Engagement', image: 'https://images.unsplash.com/photo-1587271407850-8d438ca9fdf2?q=80&w=2000&auto=format&fit=crop', rating: 4.9, location: 'Jaipur', reviews: 87, price: '₹1,20,000', description: 'Romantic garden pavilion adorned with roses — the perfect engagement setting.', amenities: ['Parking', 'Decor', 'Catering', 'AC', 'Wifi'], capacity: '100 guests' },
-    { id: 'e-2', title: 'The Golden Terrace', category: 'Engagement', image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2000&auto=format&fit=crop', rating: 4.8, location: 'Delhi', reviews: 74, price: '₹85,000', description: 'Elegant rooftop terrace with city lights backdrop for intimate engagements.', amenities: ['Bar', 'Wifi', 'Decor', 'Catering', 'AC'], capacity: '50 guests' },
-
-    // PRIVATE PARTY
-    { id: 'pp-1', title: 'The Secret Garden Club', category: 'Private Party', image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2000&auto=format&fit=crop', rating: 4.6, location: 'Goa', reviews: 165, price: '₹55,000', description: 'Exclusive private venue for bachelorette parties and personal milestones.', amenities: ['Wifi', 'Bar', 'Pool', 'Decor', 'Catering', 'AC'], capacity: '30 guests' },
-    { id: 'pp-2', title: 'VIP Skyline Lounge', category: 'Private Party', image: 'https://images.unsplash.com/photo-1545128485-c400e7702796?q=80&w=2000&auto=format&fit=crop', rating: 4.7, location: 'Chennai', reviews: 93, price: '₹70,000', description: 'Ultra-private skyline lounge for exclusive gatherings.', amenities: ['Wifi', 'AC', 'Bar', 'Parking', 'Catering', 'Decor'], capacity: '25 guests' }
-];
-
 export const fetchEvents = async (filters: Record<string, any> = {}): Promise<Event[]> => {
-    // Ensure at least 10 items per category
-    const eventCategories = ['Weddings', 'Parties', 'Corporate', 'Birthday', 'Engagement', 'Private Party'];
-    const locations = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Goa', 'Jaipur', 'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad'];
-
-    // Use the mockServices from outside the function
-    const expandedMockServices = [...mockServices];
-
-    eventCategories.forEach(cat => {
-        const count = expandedMockServices.filter(s => s.category === cat).length;
-        for (let i = count; i < 10; i++) {
-            const baseItem = mockServices.find(s => s.category === cat) || mockServices[0];
-            expandedMockServices.push({
-                ...baseItem,
-                id: `gen-${cat}-${i}`,
-                title: `${baseItem.title} - Signature Edition ${i}`,
-                location: locations[i % locations.length],
-                rating: parseFloat((4.0 + Math.random()).toFixed(1)),
-                reviews: Math.floor(Math.random() * 300) + 50,
-                price: `₹${(Math.floor(Math.random() * 20) + 5)},00,000`
-            });
-        }
-    });
-
-    // Priority: Fetch Real Vendor Services from Backend
-    let realEvents: Event[] = [];
     try {
         const params = new URLSearchParams();
         if (filters.category && filters.category.toLowerCase() !== 'all') {
             params.append('category', filters.category);
         }
+        if (filters.location && filters.location.toLowerCase() !== 'all') {
+            params.append('location', filters.location);
+        }
+        if (filters.search) {
+            params.append('search', filters.search);
+        }
+        if (filters.priceMin) {
+            params.append('priceMin', String(filters.priceMin));
+        }
+        if (filters.priceMax) {
+            params.append('priceMax', String(filters.priceMax));
+        }
+        if (filters.rating) {
+            params.append('rating', String(filters.rating));
+        }
         const query = params.toString();
         const url = `/services${query ? `?${query}` : ''}`;
 
-        const response = await api.get(url).catch(() => ({ data: [] }));
-        const data = response.data?.data || response.data || [];
+        const response: any = await api.get(url).catch(() => []);
+        const data = Array.isArray(response) ? response : (response?.data || []);
         if (Array.isArray(data)) {
-            realEvents = data.map(mapServiceToEvent);
+            return data.map(mapServiceToEvent);
         }
+        return [];
     } catch (err) {
         console.error('Failed to fetch real vendor services:', err);
+        return [];
     }
-
-    // Combine real events with mocks for development quality assurance
-    let mockResults = [...expandedMockServices];
-
-    if (filters.category && filters.category.toLowerCase() !== 'all') {
-        const cat = filters.category.toLowerCase();
-        mockResults = mockResults.filter(s => s.category.toLowerCase().includes(cat) || cat.includes(s.category.toLowerCase()));
-    }
-
-    const mappedMocks = mockResults.map((s, idx) => ({
-        ...s,
-        images: (s as any).images || [s.image],
-        vendorId: '550e8400-e29b-41d4-a716-446655440000',
-        vendorName: 'Ease2Event Exclusive',
-        vendorImage: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=200',
-        reviews: s.reviews || 0,
-        capacity: (s as any).capacity || 'Contact Vendor',
-        isSponsored: idx % 3 === 0
-    })) as Event[];
-
-    // Return real events first, then mocks
-    return [...realEvents, ...mappedMocks];
-};
-
-const generateDummyVendors = (): Event[] => {
-    const ALL_CATEGORIES = [
-        'Banquet Hall', 'Caterer', 'Photographer', 'Makeup Artist', 'DJ & Music',
-        'Decorator', 'Sweet Shop', 'Venue Owner', 'Florist', 'Lighting & Sound',
-        'Event Planner', 'Invitation Designer', 'Costume Rental', 'Mehendi Artist',
-        'Choreographer', 'Security Service', 'Transport & Cab', 'Hotel/Resort Partner',
-        'Anchor/Emcee', 'Drone Photography', 'Live Streaming Service', 'Stage Designer',
-        'Bartender & Beverage Services', 'Rental Furniture & Props', 'Return Gift Providers',
-        'Food Truck/Live Counter', 'Fireworks Supplier', 'Priest / Purohit',
-        'Destination Wedding Organizer', 'Other Services'
-    ];
-    
-    const locations = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Goa', 'Jaipur', 'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad'];
-    
-    const imageMap: Record<string, string> = {
-        'Caterer': 'https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=1200',
-        'Decor': 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200',
-        'Decorator': 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200',
-        'Photographer': 'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=1200',
-        'Banquet Hall': 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200',
-        'Makeup Artist': 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1200',
-        'DJ & Music': 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200',
-        'Venue Owner': 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200',
-        'AV Setup': 'https://images.unsplash.com/photo-1774118042995-b7c9d9fc0c05?w=600&auto=format&fit=crop&q=60'
-    };
-    
-    const getDefaultImage = (cat: string) => imageMap[cat] || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200';
-
-    const dummies: Event[] = [];
-    ALL_CATEGORIES.forEach(cat => {
-        for (let i = 0; i < 10; i++) {
-            const suffixes = ['Pro', 'Experts', 'Studio', 'Hub', 'Collective', 'Masters', 'Elite', 'Premium', 'Specialists', 'Services'];
-            const vendorName = `${cat} ${suffixes[i]} ${i + 1}`;
-            
-            dummies.push({
-                id: `dv-${cat.replace(/\s+/g, '-')}-${i+1}`,
-                vendorId: `dv-${cat.replace(/\s+/g, '-')}-${i+1}`,
-                title: vendorName,
-                category: cat,
-                image: getDefaultImage(cat),
-                images: [getDefaultImage(cat)],
-                rating: parseFloat((4.0 + Math.random()).toFixed(1)),
-                location: locations[i % locations.length],
-                reviews: Math.floor(Math.random() * 300) + 50,
-                price: cat === 'Photographer' ? `₹${(i + 5) * 10},000 / day` : `₹${(i+2)*10},000+`,
-                capacity: 'Contact Vendor',
-                description: `Premium ${cat} services for your special events. Highly rated and professional.`,
-                vendorName: vendorName,
-                vendorImage: getDefaultImage(cat).replace('w=1200', 'w=200'),
-                isSponsored: i < 2,
-                isFeatured: i < 4
-            } as any);
-        }
-    });
-    return dummies;
 };
 
 export const fetchVendorDiscovery = async (filters: Record<string, any> = {}): Promise<Event[]> => {
-    const params = new URLSearchParams();
-    if (filters.city) params.append('city', filters.city);
-    if (filters.search) params.append('search', filters.search);
+    try {
+        const params = new URLSearchParams();
+        if (filters.city) params.append('city', filters.city);
+        if (filters.search) params.append('search', filters.search);
+        if (filters.categoryId) params.append('categoryId', filters.categoryId);
 
-    // Convert to query string
-    const query = params.toString();
-    const url = `/vendors/discovery${query ? `?${query}` : ''}`;
+        const query = params.toString();
+        const url = `/vendors/discovery${query ? `?${query}` : ''}`;
 
-    const response = await api.get(url).catch(() => ({ data: [] }));
-    const data = response.data?.data?.vendors || response.data?.vendors || response.data || [];
+        const response: any = await api.get(url).catch(() => ({ vendors: [] }));
+        const data = response?.vendors || response?.data?.vendors || (Array.isArray(response) ? response : []);
 
-    let realVendors = [];
-    if (Array.isArray(data)) {
-        realVendors = data.map((v: any) => ({
-            id: v.id,
-            vendorId: v.id,
-            title: v.businessName || 'Unnamed Vendor',
-            category: v.category?.name || v.category || 'Uncategorized',
-            image: v.portfolioImages?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200',
-            images: v.portfolioImages || [],
-            rating: v.rating || 4.5,
-            location: v.businessAddress?.city || 'India',
-            reviews: v.totalReviews || 0,
-            price: 'Contact for Pricing',
-            capacity: 'Contact Vendor',
-            description: v.bio || '',
-            vendorName: v.businessName || 'Unnamed Vendor',
-            vendorImage: v.portfolioImages?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=200',
-            isSponsored: !!v.isSponsored,
-            isFeatured: !!v.isFeatured
-        }));
+        if (Array.isArray(data)) {
+            return data.map((v: any) => ({
+                id: v.id,
+                vendorId: v.id,
+                title: v.businessName || 'Unnamed Vendor',
+                category: v.category?.name || v.category || 'Uncategorized',
+                image: v.portfolioImages?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200',
+                images: v.portfolioImages || [],
+                rating: v.rating || 4.5,
+                location: v.businessAddress?.city || 'India',
+                reviews: v.totalReviews || 0,
+                price: 'Contact for Pricing',
+                capacity: 'Contact Vendor',
+                description: v.bio || '',
+                vendorName: v.businessName || 'Unnamed Vendor',
+                vendorImage: v.portfolioImages?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=200',
+                isSponsored: !!v.isSponsored,
+                isFeatured: !!v.isFeatured
+            }));
+        }
+
+        return [];
+    } catch (err) {
+        console.error('Failed to fetch vendor discovery:', err);
+        return [];
     }
-
-    const dummyVendors = generateDummyVendors();
-
-    let combined = [...realVendors, ...dummyVendors];
-
-    // Fallback filtering if search API didn't handle categories (like dummy data)
-    if (filters.search) {
-        const cat = filters.search.toLowerCase();
-        combined = combined.filter(s => s.category.toLowerCase().includes(cat) || cat.includes(s.category.toLowerCase()));
-    }
-
-    return combined;
 };
 
 export const fetchEventById = async (id: string): Promise<Event | undefined> => {
-    const all = await fetchEvents();
-    return all.find(e => e.id === id);
+    try {
+        const res: any = await api.get(`/services/${id}`);
+        const service = res?.data || res;
+        if (service && service.id) {
+            return mapServiceToEvent(service);
+        }
+        return undefined;
+    } catch (err) {
+        console.error('Failed to fetch service by id:', err);
+        return undefined;
+    }
 };
 
 export const createBooking = async (data: any) => {

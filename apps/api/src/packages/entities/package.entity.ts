@@ -12,7 +12,7 @@ export class Package {
     @Column('text')
     description: string;
 
-    @Column('decimal', { precision: 10, scale: 2 })
+    @Column('decimal', { name: 'base_price', precision: 10, scale: 2 })
     basePrice: number;
 
     @Column('text', { array: true, default: [] })

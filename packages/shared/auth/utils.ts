@@ -272,7 +272,7 @@ export const getPortalUrl = (role: 'user' | 'vendor' | 'admin'): string => {
             : `${window.location.origin}/vendor`;
     }
     
-    if (role === 'admin') {
+    if (role === 'admin' || (role as string) === 'super_admin') {
         const adminUrl = env.VITE_ADMIN_URL;
         if (adminUrl) return adminUrl;
         return isLocal 

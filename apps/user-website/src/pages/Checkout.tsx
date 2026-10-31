@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { CreditCard, Wallet, Smartphone, Sparkles, Receipt, ArrowRight, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useRazorpay } from '../hooks/useRazorpay';
-import { checkoutMerchandise } from '../lib/api';
+import { checkoutMerchandise, fetchWalletOverview } from '../lib/api';
 
 const Checkout: React.FC = () => {
     const { items, totalPrice, clearCart } = useCart();
@@ -32,7 +32,16 @@ const Checkout: React.FC = () => {
     const [discount, setDiscount] = useState(0);
 
     // Wallet balance
-    const walletBalance = 5500; // Mock balance
+    const [walletBalance, setWalletBalance] = useState(0);
+
+    useEffect(() => {
+        fetchWalletOverview()
+            .then((res: any) => {
+                const bal = res?.data?.balance ?? res?.balance ?? 0;
+                setWalletBalance(bal);
+            })
+            .catch(() => {});
+    }, []);
 
     const handleApplyCoupon = () => {
         if (coupon.toUpperCase() === 'EASE20') {
@@ -69,40 +78,8 @@ const Checkout: React.FC = () => {
                 }
             });
         } catch (err: any) {
-            console.warn('Backend order placement failed, falling back to local storage', err);
-            // Fallback for mock products
-            try {
-                const mockOrders = JSON.parse(localStorage.getItem('ease2event_mock_orders') || '[]');
-                const newOrder = {
-                    id: `ord_${Date.now()}`,
-                    userId: 'mock-user-id',
-                    items: items.map(item => ({
-                        product: { title: item.title, price: item.price, image: item.image, category: item.category },
-                        quantity: item.quantity,
-                    })),
-                    totalAmount: finalPrice,
-                    shippingAddress: fullShippingAddress,
-                    phone: contactPhone,
-                    paymentMethod: finalPaymentMethod,
-                    status: 'processing',
-                    createdAt: new Date().toISOString(),
-                };
-                mockOrders.push(newOrder);
-                localStorage.setItem('ease2event_mock_orders', JSON.stringify(mockOrders));
-
-                toast.success('Order placed successfully!');
-                clearCart();
-                navigate('/booking-confirmation', {
-                    state: {
-                        isMerchandise: true,
-                        orderTotal: finalPrice,
-                        paymentMethod: finalPaymentMethod,
-                        emiTenure: finalPaymentMethod === 'emi' ? emiTenure : undefined,
-                    }
-                });
-            } catch (e) {
-                toast.error('Failed to place order');
-            }
+            console.error('Order placement failed:', err);
+            toast.error(err.response?.data?.message || err.message || 'Failed to place order. Please try again.');
         }
     };
 

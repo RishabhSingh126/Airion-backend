@@ -14,7 +14,6 @@ const Reviews: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [replyText, setReplyText] = useState('');
-    const [mockReplies, setMockReplies] = useState<Record<string, string>>({});
 
     const { data: rawReviews = [], isLoading } = useQuery({
         queryKey: ['vendor-reviews', vendorId],
@@ -26,40 +25,9 @@ const Reviews: React.FC = () => {
         enabled: !!vendorId
     });
 
-    // Fallback to mock data ONLY if backend is completely empty and no search is applied
     const reviewsData = useMemo(() => {
-        if (rawReviews.length > 0) return rawReviews;
-        
-        return [
-            {
-                id: 'mock-1',
-                user: { name: 'Rahul Singh', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop' },
-                rating: 5,
-                createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-                reviewText: 'Absolutely amazing venue and service! The Grand Ballroom was decorated perfectly for our wedding reception. The staff was incredibly helpful throughout the event.',
-                service: { title: 'Grand Ballroom' },
-                vendorReply: mockReplies['mock-1'] !== undefined ? mockReplies['mock-1'] : 'Thank you Rahul! It was an honor to host your special day. Wishing you a happy married life!',
-            },
-            {
-                id: 'mock-2',
-                user: { name: 'Priya Verma', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop' },
-                rating: 4,
-                createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-                reviewText: 'The Sunset Garden is beautiful! Everything went skip-free. Only reason for 4 stars is that the catering setup took slightly longer than expected, but the food was delicious.',
-                service: { title: 'Sunset Garden' },
-                vendorReply: mockReplies['mock-2'] !== undefined ? mockReplies['mock-2'] : null,
-            },
-            {
-                id: 'mock-3',
-                user: { name: 'Vikram Mehta', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop' },
-                rating: 5,
-                createdAt: new Date(Date.now() - 14 * 86400000).toISOString(),
-                reviewText: 'Professional staff and great coordination. Highly recommended for corporate events.',
-                service: { title: 'Corporate Package' },
-                vendorReply: mockReplies['mock-3'] !== undefined ? mockReplies['mock-3'] : 'Glad you liked it Vikram! Looking forward to your next corporate booking.',
-            }
-        ];
-    }, [rawReviews, mockReplies]);
+        return rawReviews || [];
+    }, [rawReviews]);
 
     const stats = useMemo(() => {
         const total = reviewsData.length;
@@ -99,11 +67,6 @@ const Reviews: React.FC = () => {
 
     const replyMutation = useMutation({
         mutationFn: async ({ id, text }: { id: string; text: string }) => {
-            if (id.startsWith('mock-')) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                setMockReplies(prev => ({ ...prev, [id]: text }));
-                return { success: true };
-            }
             return replyToReview(id, vendorId, text);
         },
         onSuccess: () => {

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan } from 'typeorm';
 import { Booking } from '../bookings/entities/booking.entity';
 import { Vendor, VendorVerificationStatus } from '../vendors/entities/vendor.entity';
-import { VendorAd } from '../vendors/entities/vendor-ad.entity';
+import { VendorAd, AdStatus } from '../vendors/entities/vendor-ad.entity';
 import { User } from '../auth/entities/user.entity';
 
 @Injectable()
@@ -15,6 +15,8 @@ export class UserDashboardService {
         private readonly bookingRepository: Repository<Booking>,
         @InjectRepository(Vendor)
         private readonly vendorRepository: Repository<Vendor>,
+        @InjectRepository(VendorAd)
+        private readonly vendorAdRepository: Repository<VendorAd>,
     ) { }
 
     async getOverview(userId: string) {
@@ -39,7 +41,6 @@ export class UserDashboardService {
         });
 
         // 3. Fetch Trending/Recommended Vendors
-        // For now, fetch top rated vendors in the platform
         const trendingVendors = await this.vendorRepository.find({
             where: { verificationStatus: VendorVerificationStatus.APPROVED },
             relations: ['category'],
@@ -47,13 +48,19 @@ export class UserDashboardService {
             take: 4
         });
 
-        // 4. Fetch Active Deals (Ads)
-        // This would normally come from the VendorAd system we just built
-        // For now, return mock deals if no ads exist
-        const deals = [
-            { id: 1, title: 'Wedding Season Deals', subtitle: 'Up to 30% Off', image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800', link: '/marketplace' },
-            { id: 2, title: 'Book Now, Pay Later', subtitle: 'EMI on all bookings', image: 'https://plus.unsplash.com/premium_photo-1661879046374-2f7298cd2ab8?w=600&auto=format&fit=crop&q=80', link: '/marketplace' }
-        ];
+        // 4. Fetch Active Deals from real ads
+        const activeAds = await this.vendorAdRepository.find({
+            where: { status: AdStatus.ACTIVE },
+            take: 4
+        });
+
+        const deals = activeAds.map(ad => ({
+            id: ad.id,
+            title: ad.title,
+            subtitle: 'Sponsored Offer',
+            image: ad.imageUrl,
+            link: '/marketplace'
+        }));
 
         return {
             stats: {
