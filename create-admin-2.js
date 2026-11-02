@@ -8,15 +8,15 @@ async function createAdmin() {
     connectionString: rawUrl.replace(/[?&]sslmode=[^&]+/, ''),
     ssl: { rejectUnauthorized: false }
   });
-
+  // This is try catch block
   try {
     await client.connect();
-    
+
     const email = 'vinaysharma31681@gmail.com';
-    
+
     // Check if user exists
     const res = await client.query('SELECT * FROM users WHERE email = $1', [email]);
-    
+
     if (res.rows.length > 0) {
       // Update role to admin
       await client.query("UPDATE users SET role = 'admin' WHERE email = $1", [email]);
