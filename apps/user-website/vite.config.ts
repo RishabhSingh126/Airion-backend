@@ -13,6 +13,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // 🚫 CRITICAL: Do NOT let Service Worker intercept /vendor or /admin
         // These are separate apps served by Vercel from dist/vendor/ and dist/admin/
         navigateFallbackDenylist: [/^\/vendor/, /^\/admin/, /^\/api/],

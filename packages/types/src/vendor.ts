@@ -26,11 +26,20 @@ export const SocialLinksSchema = z.object({
 
 export const CreateVendorSchema = z.object({
   businessName: z.string().min(2),
-  businessEmail: z.string().email().optional().nullable(),
-  businessPhone: z.string().min(10).max(15).regex(/^\+?[0-9]*$/, 'Invalid phone number format'),
+  businessEmail: z.preprocess(
+    val => (typeof val === 'string' && val.trim() === '') ? null : (typeof val === 'string' ? val.trim() : val),
+    z.string().email().optional().nullable()
+  ),
+  businessPhone: z.preprocess(
+    val => typeof val === 'string' ? val.trim().replace(/[\s\-\(\)]/g, '') : val,
+    z.string().min(10).max(16).regex(/^\+?[0-9]*$/, 'Invalid phone number format')
+  ),
   city: z.string().min(1).optional().nullable(),
   yearsInBusiness: z.string().optional().nullable(),
-  gstNumber: z.string().length(15).regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GST format').optional().nullable(),
+  gstNumber: z.preprocess(
+    val => (typeof val === 'string' && val.trim() === '') ? null : val,
+    z.string().length(15).regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GST format').optional().nullable()
+  ),
   panNumber: z.string().optional().nullable(),
   aadharNumber: z.string().optional().nullable(),
   acquisitionChannels: z.array(z.string()).min(1, 'Please select at least one channel').optional(),

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { updateVendorProfile, uploadImage } from '../../lib/api';
+import { updateVendorProfile, uploadImage, updateProfile } from '../../lib/api';
 
 export const VendorRegistrationForm: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -46,22 +46,31 @@ export const VendorRegistrationForm: React.FC<{ onSuccess: () => void }> = ({ on
         imageUrl = uploadRes.url || uploadRes.data?.url;
       }
 
+      const cleanPhone = (formData.phone || '').trim().replace(/[\s\-\(\)]/g, '');
+      const cleanEmail = (formData.email || '').trim();
+
       const payload = {
-        businessName: formData.business_name,
-        businessEmail: formData.email,
-        businessPhone: formData.phone,
+        businessName: (formData.business_name || '').trim(),
+        businessEmail: cleanEmail || undefined,
+        businessPhone: cleanPhone,
+        city: (formData.district || '').trim() || undefined,
         vendorType: formData.vendor_type,
         businessAddress: {
           street: '',
-          city: formData.district,
+          city: (formData.district || '').trim(),
           state: '',
           country: 'India',
-          zipCode: formData.pincode
+          zipCode: (formData.pincode || '').trim()
         },
         portfolioImages: imageUrl ? [imageUrl] : undefined
       };
 
       await updateVendorProfile(payload);
+      if (formData.owner_name?.trim()) {
+        try {
+          await updateProfile({ name: formData.owner_name.trim() });
+        } catch (_) {}
+      }
       toast.success('Registration successful!');
       onSuccess();
     } catch (err: any) {

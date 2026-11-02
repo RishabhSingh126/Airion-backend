@@ -5,7 +5,7 @@ import {
  Clock,
  MapPin,
  Users,
- DollarSign,
+ IndianRupee,
  CheckCircle,
  XCircle,
  AlertCircle,
@@ -262,7 +262,7 @@ const Bookings: React.FC = () => {
  <div className="space-y-1.5">
  <p className="text-[10px] font-bold text-[var(--ease2event-text-secondary)] tracking-widest">Amount</p>
  <div className="flex items-center gap-2 text-sm font-bold text-[var(--ease2event-text-primary)]">
- <DollarSign size={14} className="text-emerald-600 dark:text-emerald-400" />
+ <IndianRupee size={14} className="text-emerald-600 dark:text-emerald-400" />
  {booking.amount}
  </div>
  </div>
@@ -363,7 +363,7 @@ const Bookings: React.FC = () => {
  <div className="space-y-1.5">
  <p className="text-[10px] font-black text-[var(--ease2event-text-secondary)] tracking-[0.2em] opacity-60">Transaction Value</p>
  <div className="flex items-center gap-2">
- <DollarSign size={14} className="text-emerald-500" />
+ <IndianRupee size={14} className="text-emerald-500" />
  <p className="text-sm font-black text-emerald-500">{selectedBooking.amount}</p>
  </div>
  </div>

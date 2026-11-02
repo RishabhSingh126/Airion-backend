@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "turbo dev --concurrency=5",
-    "kill-dev": "true",
+    "kill-dev": "lsof -ti:3000,5173,5174,5175 | xargs kill -9 2>/dev/null || true",
     "build": "bash build.sh",
     "vercel-build": "bash build.sh",
     "build:user": "turbo build --filter=@ease2event/user-website",

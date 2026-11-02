@@ -1,8 +1,11 @@
+require('dotenv').config();
 const { Client } = require('pg');
 
 async function createAdmin() {
+  const rawUrl = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_MQvRIeE8u1NP@ep-bitter-bar-ahyodkz1-pooler.c-3.us-east-1.aws.neon.tech/neondb";
   const client = new Client({
-    connectionString: "postgresql://neondb_owner:npg_UHIlwOxX0a2T@ep-aged-frost-aif42cf4-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require"
+    connectionString: rawUrl.replace(/[?&]sslmode=[^&]+/, ''),
+    ssl: { rejectUnauthorized: false }
   });
 
   try {

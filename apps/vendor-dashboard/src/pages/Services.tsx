@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
  Plus, Search, Filter, Edit3, Trash2, X, Loader2, Upload, IndianRupee,
- CheckCircle2, Info, Sparkles, Package as PackageIcon, Zap, DollarSign,
+ CheckCircle2, Info, Sparkles, Package as PackageIcon, Zap,
  Box, Layers, ArrowUpRight, ChevronRight, Activity, MapPin, Users,
  Globe, ShieldCheck, Star
 } from 'lucide-react';
@@ -718,12 +718,21 @@ const Services: React.FC = () => {
  className="card-minimal !p-0 overflow-hidden group border-[var(--ease2event-border-base)] bg-[var(--ease2event-bg-surface)]  transition-all flex flex-col h-full cursor-pointer rounded-xl"
  >
  <div className="h-56 bg-slate-900 relative overflow-hidden">
+ {prod.images && prod.images.length > 0 && prod.images[0] ? (
+ <>
  <img
- src={prod.images?.[0] || 'https://images.unsplash.com/photo-1549439602-43ebca2327af?auto=format&fit=crop&q=80&w=1000'}
- className="w-full h-full object-cover transition-transform opacity-60 group-hover:opacity-100"
+ src={prod.images[0]}
+ className="w-full h-full object-cover transition-transform opacity-80 group-hover:opacity-100"
  alt={prod.title}
  />
  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+ </>
+ ) : (
+ <div className="w-full h-full bg-slate-100 dark:bg-slate-800/60 flex flex-col items-center justify-center border-b border-[var(--ease2event-border-subtle)] text-slate-400 dark:text-slate-500">
+ <PackageIcon size={36} className="mb-2 opacity-50" />
+ <span className="text-xs font-semibold tracking-wide">No image uploaded</span>
+ </div>
+ )}
  <div className="absolute top-6 left-6">
  <Badge className="bg-[var(--ease2event-brand-primary)]/20 backdrop-blur-xl border border-[var(--ease2event-brand-primary)]/30 text-white font-black text-[9px] tracking-[0.2em] px-4 py-2 rounded-2xl ">
  {prod.guestCapacity ? 'Operational Venue' : 'Service Unit'}

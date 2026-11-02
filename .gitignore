@@ -48,6 +48,8 @@ coverage/
 # temp directory
 .temp
 .tmp
+uploads/
+apps/api/uploads/
 
 # Runtime data
 pids

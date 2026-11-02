@@ -218,8 +218,9 @@ export const checkAvailability = async (vId: string, date: string) => (await api
 export const recordVendorProfileView = async (vId: string, guestVisitorId?: string) => await api.post(`/vendors/${vId}/profile-view`, { guestVisitorId });
 
 export const uploadImage = async (file: File) => {
-    const fd = new FormData(); fd.append('file', file);
-    return (await api.post('/uploads/image', fd, { headers: { 'Content-Type': 'multipart/form-data' } })) as any;
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    return (await api.post('/uploads/image', fd)) as any;
 };
 
 export const askSupportAI = async (message: string) => {

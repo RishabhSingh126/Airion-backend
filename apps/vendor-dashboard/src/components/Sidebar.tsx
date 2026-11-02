@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Calendar, CalendarDays, DollarSign, MessageSquare, Package, Settings, BarChart2, Ticket, X, Megaphone, Camera, Home, ShoppingBag, Briefcase, Star, Crown, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Calendar, CalendarDays, IndianRupee, MessageSquare, Package, Settings, BarChart2, Ticket, X, Megaphone, Camera, Home, ShoppingBag, Briefcase, Star, Crown, Sparkles } from 'lucide-react';
 import { useAuth } from '@ease2event/shared';
 import { Avatar } from '@ease2event/ui';
 import { useVendorSubscription } from '../hooks/useVendorSubscription';
@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
  { icon: Package, label: 'Packages & Services', path: '/services' },
  { icon: Calendar, label: 'Bookings', path: '/bookings' },
  { icon: CalendarDays, label: 'Calendar', path: '/calendar' },
- { icon: DollarSign, label: 'Earnings', path: '/earnings' },
+ { icon: IndianRupee, label: 'Earnings', path: '/earnings' },
  { icon: MessageSquare, label: 'Enquiries', path: '/enquiries' },
  { icon: Package, label: 'Assigned Inquiries', path: '/package-inquiries' },
  { icon: ShoppingBag, label: 'Event Shop', path: '/shop-items' },

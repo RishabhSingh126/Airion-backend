@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { User, Briefcase, Camera, Plus, Trash2, CheckCircle2, Loader2, Phone, Mail, Edit3, X } from 'lucide-react';
 import { Avatar, Button } from '@ease2event/ui';
 import { useAuth } from '@ease2event/shared';
@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 
 const ProfileSettings: React.FC = () => {
   const { user, refreshUser } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
@@ -225,6 +226,7 @@ const ProfileSettings: React.FC = () => {
       <div className="space-y-6">
         <div className="flex flex-col xl:flex-row items-center gap-5 sm:gap-6 group bg-[var(--ease2event-bg-elevated)]/30 p-6 sm:p-6 rounded-2xl sm:rounded-3xl border border-[var(--ease2event-border-subtle)] relative">
           <input
+            ref={fileInputRef}
             type="file"
             id="profile-upload"
             className="hidden"
@@ -242,22 +244,35 @@ const ProfileSettings: React.FC = () => {
                   await api.patch('/auth/profile', { avatar: imageUrl });
                   refreshUser();
                   toast.success('Profile picture updated and saved!', { id: loaderId });
+                } else {
+                  toast.error('Failed to get uploaded image URL', { id: loaderId });
                 }
-              } catch (err) {
-                toast.error('Upload failed', { id: loaderId });
+              } catch (err: any) {
+                toast.error(err?.message || 'Upload failed', { id: loaderId });
+              } finally {
+                e.target.value = '';
               }
             }}
           />
           <div className="relative">
             <Avatar name={personalData.name} src={personalData.profileImage} size="xl" className="size-24 sm:size-32 ring-8 sm:ring-12 ring-[var(--ease2event-bg-surface)] group-hover:ring-[var(--ease2event-brand-primary)]/20 transition-all" />
-            <label htmlFor="profile-upload" className="cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-auto md:left-auto md:bottom-1 md:right-1 md:translate-x-0 md:translate-y-0 p-3 bg-[var(--ease2event-brand-primary)]/80 md:bg-[var(--ease2event-brand-primary)] text-white rounded-full md:rounded-2xl hover:scale-110 active:scale-95 transition-all backdrop-blur-sm md:backdrop-blur-none z-10">
+            <label 
+              htmlFor="profile-upload" 
+              onClick={() => fileInputRef.current?.click()}
+              className="cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-auto md:left-auto md:bottom-1 md:right-1 md:translate-x-0 md:translate-y-0 p-3 bg-[var(--ease2event-brand-primary)] text-white rounded-full md:rounded-2xl hover:scale-110 active:scale-95 transition-all shadow-md z-10"
+              title="Upload profile photo"
+            >
               <Camera size={18} />
             </label>
           </div>
           <div className="space-y-4 sm:space-y-5 text-center xl:text-left flex-1">
             <h3 className="font-bold text-xs sm:text-sm text-[var(--ease2event-text-primary)] tracking-normal">Profile Picture</h3>
             <p className="text-[10px] sm:text-[11px] text-[var(--ease2event-text-secondary)] font-semibold leading-relaxed max-w-sm">Upload a professional photo to improve your credibility and brand visibility.</p>
-            <label htmlFor="profile-upload" className={`cursor-pointer inline-flex items-center justify-center h-10 sm:h-11 px-6 sm:px-5 bg-[var(--ease2event-bg-surface)] border border-[var(--ease2event-border-base)] text-[10px] sm:text-sm text-[var(--ease2event-text-primary)] font-bold tracking-normal rounded-xl w-full sm:w-auto transition-all ${isEditing ? 'hover:bg-[var(--ease2event-bg-elevated)]' : 'opacity-50 pointer-events-none'}`}>
+            <label 
+              htmlFor="profile-upload" 
+              onClick={() => fileInputRef.current?.click()}
+              className="cursor-pointer inline-flex items-center justify-center h-10 sm:h-11 px-6 sm:px-5 bg-[var(--ease2event-bg-surface)] hover:bg-[var(--ease2event-bg-elevated)] border border-[var(--ease2event-border-base)] hover:border-[var(--ease2event-brand-primary)] text-[10px] sm:text-sm text-[var(--ease2event-text-primary)] font-bold tracking-normal rounded-xl w-full sm:w-auto transition-all shadow-sm active:scale-95"
+            >
               Update Photo
             </label>
           </div>
@@ -374,6 +389,8 @@ const ProfileSettings: React.FC = () => {
                     }
                   } catch (err) {
                     toast.error('Upload failed', { id: loaderId });
+                  } finally {
+                    e.target.value = '';
                   }
                 }}
               />

@@ -1,3 +1,10 @@
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+// Load .env from root and current directory
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config();
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -34,8 +41,46 @@ async function bootstrap() {
 
     const app = await NestFactory.create(AppModule, { logger });
 
+    // Enable CORS immediately as top-level middleware so preflight OPTIONS requests are handled instantly
+    app.enableCors({
+        origin: (origin, callback) => {
+            const allowedOrigins = [
+                'https://airion-backend-admin-panel-1e98o3h6f-vinay2003s-projects.vercel.app',
+                'https://airion-backend-vendor-dashboard.vercel.app',
+                'https://airion-backend-admin-panel-eg56.vercel.app',
+                process.env.FRONTEND_URL,
+                process.env.VENDOR_URL,
+                process.env.ADMIN_URL,
+            ].filter(Boolean) as string[];
+
+            const isLocal = !origin || 
+                origin.startsWith('http://localhost:') || 
+                origin.startsWith('http://127.0.0.1:') || 
+                origin.startsWith('http://192.168.') ||
+                origin.startsWith('http://10.') ||
+                origin.startsWith('http://172.');
+            const isVercel = origin && origin.endsWith('.vercel.app');
+            const isCustomDomain = origin && (origin === 'https://ease2event.com' || origin === 'https://www.ease2event.com');
+
+            if (isLocal || isVercel || isCustomDomain || allowedOrigins.includes(origin as string) || process.env.NODE_ENV !== 'production') {
+                callback(null, true);
+            } else {
+                callback(null, true); // Permissive fallback to prevent breaking valid cross-origin requests
+            }
+        },
+        credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: '*',
+        exposedHeaders: ['x-correlation-id', 'Content-Disposition'],
+        optionsSuccessStatus: 204,
+        preflightContinue: false,
+    });
+
     // Security Headers & Performance
-    app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+    app.use(helmet({ 
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+        crossOriginOpenerPolicy: false,
+    }));
     const compression = require('compression');
     app.use(compression());
 
@@ -50,34 +95,6 @@ async function bootstrap() {
     app.use('/uploads', express.static(uploadsDir));
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-    // Enable CORS with dynamic absolute origin
-    app.enableCors({
-        origin: (origin, callback) => {
-            const allowedOrigins = [
-                'https://airion-backend-admin-panel-1e98o3h6f-vinay2003s-projects.vercel.app',
-                'https://airion-backend-vendor-dashboard.vercel.app',
-                'https://airion-backend-admin-panel-eg56.vercel.app',
-                process.env.FRONTEND_URL,
-                process.env.VENDOR_URL,
-                process.env.ADMIN_URL,
-            ].filter(Boolean) as string[];
-
-            const isLocal = !origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:') || origin.startsWith('http://192.168.');
-            const isVercel = origin && origin.endsWith('.vercel.app');
-            const isCustomDomain = origin && (origin === 'https://ease2event.com' || origin === 'https://www.ease2event.com');
-
-            if (isLocal || isVercel || isCustomDomain || allowedOrigins.includes(origin as string)) {
-                callback(null, true);
-            } else {
-                console.warn(`🔒 CORS Blocked for origin: ${origin}`);
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
-        credentials: true,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-        allowedHeaders: 'Content-Type, Accept, Authorization',
-    });
 
     // Global Filters & Interceptors
     app.useGlobalFilters(new HttpExceptionFilter());

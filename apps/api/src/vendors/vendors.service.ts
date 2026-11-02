@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, OnModuleInit, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vendor, VendorVerificationStatus } from './entities/vendor.entity';
 import { Activity, ActivityType } from './entities/activity.entity';
 import { CreateVendorDto } from './dto/create-vendor.dto';
-import { User } from '../auth/entities/user.entity';
+import { User, UserRole } from '../auth/entities/user.entity';
 import { Category } from '../categories/entities/category.entity';
 import { Booking } from '../bookings/entities/booking.entity';
 import { VendorAd } from './entities/vendor-ad.entity';
@@ -14,7 +14,9 @@ import { VendorProfileView } from './entities/vendor-profile-view.entity';
 import { EmailService } from '../common/services/email.service';
 
 @Injectable()
-export class VendorsService {
+export class VendorsService implements OnModuleInit {
+    private readonly logger = new Logger(VendorsService.name);
+
     constructor(
         @InjectRepository(Vendor)
         private vendorRepository: Repository<Vendor>,
@@ -37,6 +39,40 @@ export class VendorsService {
         private emailService: EmailService,
     ) { }
 
+    async onModuleInit() {
+        try {
+            await this.vendorRepository.query(`
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "vendor_type" varchar;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "pan_number" varchar;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "aadhar_number" varchar;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "is_sponsored" boolean DEFAULT false;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "is_featured" boolean DEFAULT false;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "rejection_reason" text;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "reviewed_by_id" uuid;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "kyc_submitted_at" timestamp;
+                ALTER TABLE "vendors" ADD COLUMN IF NOT EXISTS "kyc_reviewed_at" timestamp;
+
+                CREATE TABLE IF NOT EXISTS "vendor_profile_views" (
+                    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
+                    "vendorId" uuid NOT NULL,
+                    "viewerUserId" uuid,
+                    "guestVisitorId" character varying,
+                    "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                    CONSTRAINT "PK_vendor_profile_views" PRIMARY KEY ("id"),
+                    CONSTRAINT "FK_vendor_profile_views_vendor" FOREIGN KEY ("vendorId") REFERENCES "vendors"("id") ON DELETE CASCADE,
+                    CONSTRAINT "FK_vendor_profile_views_user" FOREIGN KEY ("viewerUserId") REFERENCES "users"("id") ON DELETE CASCADE,
+                    CONSTRAINT "UQ_vendor_viewerUserId" UNIQUE ("vendorId", "viewerUserId"),
+                    CONSTRAINT "UQ_vendor_guestVisitorId" UNIQUE ("vendorId", "guestVisitorId")
+                );
+                CREATE INDEX IF NOT EXISTS "IDX_vendor_profile_views_vendorId" ON "vendor_profile_views" ("vendorId");
+                CREATE INDEX IF NOT EXISTS "IDX_vendor_profile_views_vendorId_createdAt" ON "vendor_profile_views" ("vendorId", "createdAt");
+            `);
+            this.logger.log('✅ Vendor schema and profile views table verified and up-to-date.');
+        } catch (err: any) {
+            this.logger.warn(`⚠️ Vendor schema auto-migration check note: ${err.message}`);
+        }
+    }
+
     async create(createVendorDto: CreateVendorDto, user: { userId: string }): Promise<Vendor> {
         // Check if user is already a vendor
         const existingVendor = await this.vendorRepository.findOne({
@@ -44,7 +80,15 @@ export class VendorsService {
         });
 
         if (existingVendor) {
-            throw new BadRequestException('User is already registered as a vendor');
+            Object.assign(existingVendor, {
+                ...(createVendorDto as Record<string, any>),
+                isProfileComplete: true,
+            });
+            const updated = await this.vendorRepository.save(existingVendor);
+            try {
+                await this.userRepository.update({ id: user.userId }, { role: UserRole.VENDOR });
+            } catch (_) {}
+            return this.sanitizeVendor(updated);
         }
 
         const vendor = new Vendor();
@@ -53,9 +97,14 @@ export class VendorsService {
             userId: user.userId,
             verificationStatus: 'KYC_PENDING',
             isVerified: false,
+            isProfileComplete: true,
         });
 
-        return this.vendorRepository.save(vendor);
+        const saved = await this.vendorRepository.save(vendor);
+        try {
+            await this.userRepository.update({ id: user.userId }, { role: UserRole.VENDOR });
+        } catch (_) {}
+        return this.sanitizeVendor(saved);
     }
 
     /**
@@ -153,9 +202,12 @@ export class VendorsService {
             throw new BadRequestException('You can only update your own vendor profile');
         }
 
-        Object.assign(vendor, updateVendorDto);
+        Object.assign(vendor, updateVendorDto, { isProfileComplete: true });
 
         const saved = await this.vendorRepository.save(vendor);
+        try {
+            await this.userRepository.update({ id: userId }, { role: UserRole.VENDOR });
+        } catch (_) {}
         return this.sanitizeVendor(saved);
     }
 
@@ -567,23 +619,33 @@ export class VendorsService {
     }
 
     async getVendorViewAnalytics(vendorId: string): Promise<any> {
-        // Optimized single query for all time-based metrics
-        const result = await this.profileViewRepository
-            .createQueryBuilder('view')
-            .select([
-                'COUNT(view.id) as total_unique_views',
-                "COUNT(view.id) FILTER (WHERE view.createdAt >= CURRENT_DATE) as today_unique_views",
-                "COUNT(view.id) FILTER (WHERE view.createdAt >= date_trunc('week', CURRENT_DATE)) as week_unique_views",
-                "COUNT(view.id) FILTER (WHERE view.createdAt >= date_trunc('month', CURRENT_DATE)) as month_unique_views"
-            ])
-            .where('view.vendorId = :vendorId', { vendorId })
-            .getRawOne();
+        try {
+            // Optimized single query for all time-based metrics
+            const result = await this.profileViewRepository
+                .createQueryBuilder('view')
+                .select([
+                    'COUNT(view.id) as total_unique_views',
+                    "COUNT(view.id) FILTER (WHERE view.createdAt >= CURRENT_DATE) as today_unique_views",
+                    "COUNT(view.id) FILTER (WHERE view.createdAt >= date_trunc('week', CURRENT_DATE)) as week_unique_views",
+                    "COUNT(view.id) FILTER (WHERE view.createdAt >= date_trunc('month', CURRENT_DATE)) as month_unique_views"
+                ])
+                .where('view.vendorId = :vendorId', { vendorId })
+                .getRawOne();
 
-        return {
-            totalUniqueViews: Number(result?.total_unique_views || 0),
-            todayUniqueViews: Number(result?.today_unique_views || 0),
-            weekUniqueViews: Number(result?.week_unique_views || 0),
-            monthUniqueViews: Number(result?.month_unique_views || 0),
-        };
+            return {
+                totalUniqueViews: Number(result?.total_unique_views || 0),
+                todayUniqueViews: Number(result?.today_unique_views || 0),
+                weekUniqueViews: Number(result?.week_unique_views || 0),
+                monthUniqueViews: Number(result?.month_unique_views || 0),
+            };
+        } catch (error: any) {
+            this.logger.warn(`Failed to fetch vendor view analytics: ${error.message}`);
+            return {
+                totalUniqueViews: 0,
+                todayUniqueViews: 0,
+                weekUniqueViews: 0,
+                monthUniqueViews: 0,
+            };
+        }
     }
 }

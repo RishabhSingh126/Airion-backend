@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, MapPin, Star, Edit2, Trash2, Search, Filter, MoreVertical, Layers, Calendar, ChevronRight, Users, CheckCircle2, FileText } from 'lucide-react';
+import { Plus, MapPin, Star, Edit2, Trash2, Search, Filter, MoreVertical, Layers, Calendar, ChevronRight, Users, CheckCircle2, FileText, Package } from 'lucide-react';
 import api from '../lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@ease2event/shared';
@@ -46,7 +46,7 @@ const Listings: React.FC = () => {
  return dataList.map((service: any) => ({
  id: service.id,
  title: service.title,
- image: service.images?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80',
+ image: service.images?.[0] || '',
  location: service.availableLocations?.[0] || 'Mumbai',
  rating: service.vendor?.rating || 'New',
  reviews: service.vendor?.totalReviews || 0,
@@ -198,12 +198,19 @@ const Listings: React.FC = () => {
  ) : (
  filteredListings.map((listing: any, i: number) => (
  <div key={listing.id || `listing-${i}`} className="card-minimal p-0 overflow-hidden flex flex-col group h-full border-[var(--ease2event-border-subtle)] transition-shadow rounded-xl bg-white dark:bg-slate-900">
- <div className="relative h-48 shrink-0 overflow-hidden">
+ <div className="relative h-48 shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-800">
+ {listing.image ? (
  <img
  src={listing.image}
  alt={listing.title}
  className="w-full h-full object-cover"
  />
+ ) : (
+ <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+ <Package size={32} className="mb-2 opacity-50" />
+ <span className="text-xs font-semibold">No image uploaded</span>
+ </div>
+ )}
  <div className="absolute top-4 right-4 z-10">
  <Badge variant={listing.status === 'Active' ? 'confirmed' : 'pending'} className="px-3 py-1 text-[10px] font-bold rounded-md bg-white/90 dark:bg-black/90 backdrop-blur-md ">
  {listing.status || 'Active'}

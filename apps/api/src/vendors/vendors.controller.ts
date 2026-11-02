@@ -93,7 +93,12 @@ export class VendorsController {
         const userId = req.user.userId || req.user.sub;
         const vendor = await this.vendorsService.findByUserId(userId);
         if (!vendor) {
-            throw new NotFoundException('Vendor profile not found');
+            return {
+                totalUniqueViews: 0,
+                todayUniqueViews: 0,
+                weekUniqueViews: 0,
+                monthUniqueViews: 0,
+            };
         }
         return this.vendorsService.getVendorViewAnalytics(vendor.id);
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip } from 'recharts';
-import { Calendar as CalendarIcon, MoreVertical, TrendingUp, TrendingDown, DollarSign, Package, FileText, ChevronRight, Clock, Sparkles, CheckCircle2, Zap, Target, Activity, Plus, X } from 'lucide-react';
+import { Calendar as CalendarIcon, MoreVertical, TrendingUp, TrendingDown, IndianRupee, Package, FileText, ChevronRight, Clock, Sparkles, CheckCircle2, Zap, Target, Activity, Plus, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@ease2event/shared';
 import api from '../lib/api';
@@ -204,7 +204,7 @@ const Dashboard = () => {
  <StatCard title="Active Enquiries" value={displayStats?.activeEnquiries || 0} trend="+24.2%" direction="up" icon={FileText} isLoading={statsLoading && !displayStats} />
  <StatCard title="Total Services Listed" value={displayStats?.totalListings || 0} icon={Package} isLoading={statsLoading && !displayStats} />
  <StatCard title="Confirmed Bookings" value={displayStats?.confirmedBookings || 0} trend="+8.4%" direction="up" icon={CheckCircle2} isLoading={statsLoading && !displayStats} />
- <StatCard title="Revenue" value={displayStats?.revenue || 0} currency="₹" trend="+12.8%" direction="up" icon={DollarSign} isLoading={statsLoading && !displayStats} />
+ <StatCard title="Revenue" value={displayStats?.revenue || 0} currency="₹" trend="+12.8%" direction="up" icon={IndianRupee} isLoading={statsLoading && !displayStats} />
  </div>
 
  <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

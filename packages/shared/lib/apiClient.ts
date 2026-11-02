@@ -21,11 +21,11 @@ export class ApiClient {
     let resolvedBaseURL = baseURL || (import.meta.env?.VITE_API_URL as string) || '/api';
 
     if (typeof window !== 'undefined') {
-      const hostname = window.location.hostname;
-      if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-        if (resolvedBaseURL.includes('localhost') || resolvedBaseURL.includes('127.0.0.1')) {
-          resolvedBaseURL = '/api';
-        }
+      // In browser environments (both local Vite dev server and production Vercel),
+      // routing relative to '/api' uses the local Vite proxy or Vercel rewrites.
+      // This guarantees zero CORS issues, no preflight delays, and consistent auth.
+      if (!baseURL || resolvedBaseURL.includes('localhost') || resolvedBaseURL.includes('127.0.0.1')) {
+        resolvedBaseURL = '/api';
       }
     }
 
@@ -41,12 +41,26 @@ export class ApiClient {
   }
 
   private initializeInterceptors() {
-    // Request Interceptor: Auth Token Injection
+    // Request Interceptor: Auth Token Injection & Multi-part Handling
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         const token = localStorage.getItem('ease2event_token');
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        // When sending FormData or multipart, delete Content-Type so Axios and the browser
+        // can auto-generate the correct 'multipart/form-data; boundary=...' header
+        if (config.headers) {
+          const ct = (config.headers as any)['Content-Type'] || (config.headers as any)['content-type'];
+          if (config.data instanceof FormData || ct === 'multipart/form-data') {
+            delete (config.headers as any)['Content-Type'];
+            delete (config.headers as any)['content-type'];
+            if (typeof (config.headers as any).delete === 'function') {
+              (config.headers as any).delete('Content-Type');
+              (config.headers as any).delete('content-type');
+            }
+          }
         }
         return config;
       },
