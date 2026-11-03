@@ -16,6 +16,7 @@ import * as admin from 'firebase-admin';
 import { EmailService } from '../../common/services/email.service';
 import { SmsService } from '../../common/services/sms.service';
 const { authenticator } = require('otplib');
+// @ts-ignore
 import * as QRCode from 'qrcode';
 
 @Injectable()

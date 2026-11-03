@@ -9,6 +9,8 @@
     "declarationMap": false,
     "incremental": false,
     "baseUrl": ".",
+    "noImplicitAny": false,
+    "skipLibCheck": true,
     "paths": {
       "@ease2event/types": ["../../packages/types/dist/index"]
     }
