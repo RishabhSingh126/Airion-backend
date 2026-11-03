@@ -256,25 +256,25 @@ const ProfileSettings: React.FC = () => {
           />
           <div className="relative">
             <Avatar name={personalData.name} src={personalData.profileImage} size="xl" className="size-24 sm:size-32 ring-8 sm:ring-12 ring-[var(--ease2event-bg-surface)] group-hover:ring-[var(--ease2event-brand-primary)]/20 transition-all" />
-            <label 
-              htmlFor="profile-upload" 
+            <button 
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               className="cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-auto md:left-auto md:bottom-1 md:right-1 md:translate-x-0 md:translate-y-0 p-3 bg-[var(--ease2event-brand-primary)] text-white rounded-full md:rounded-2xl hover:scale-110 active:scale-95 transition-all shadow-md z-10"
               title="Upload profile photo"
             >
               <Camera size={18} />
-            </label>
+            </button>
           </div>
           <div className="space-y-4 sm:space-y-5 text-center xl:text-left flex-1">
             <h3 className="font-bold text-xs sm:text-sm text-[var(--ease2event-text-primary)] tracking-normal">Profile Picture</h3>
             <p className="text-[10px] sm:text-[11px] text-[var(--ease2event-text-secondary)] font-semibold leading-relaxed max-w-sm">Upload a professional photo to improve your credibility and brand visibility.</p>
-            <label 
-              htmlFor="profile-upload" 
+            <button 
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               className="cursor-pointer inline-flex items-center justify-center h-10 sm:h-11 px-6 sm:px-5 bg-[var(--ease2event-bg-surface)] hover:bg-[var(--ease2event-bg-elevated)] border border-[var(--ease2event-border-base)] hover:border-[var(--ease2event-brand-primary)] text-[10px] sm:text-sm text-[var(--ease2event-text-primary)] font-bold tracking-normal rounded-xl w-full sm:w-auto transition-all shadow-sm active:scale-95"
             >
               Update Photo
-            </label>
+            </button>
           </div>
         </div>
 

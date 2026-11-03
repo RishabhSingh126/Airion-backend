@@ -220,7 +220,20 @@ export const recordVendorProfileView = async (vId: string, guestVisitorId?: stri
 export const uploadImage = async (file: File) => {
     const fd = new FormData();
     fd.append('file', file, file.name);
-    return (await api.post('/uploads/image', fd)) as any;
+    try {
+        return (await api.post('/uploads/image', fd)) as any;
+    } catch (err: any) {
+        if (file.size < 10 * 1024 * 1024) {
+            const base64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            return (await api.post('/uploads/image', { file: base64 })) as any;
+        }
+        throw err;
+    }
 };
 
 export const askSupportAI = async (message: string) => {

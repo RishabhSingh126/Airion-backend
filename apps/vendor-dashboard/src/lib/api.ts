@@ -45,7 +45,21 @@ export const uploadImage = async (file: File) => {
     const fd = new FormData();
     fd.append('file', file, file.name);
     
-    return await api.post<any>('/uploads/image', fd);
+    try {
+        return await api.post<any>('/uploads/image', fd);
+    } catch (err: any) {
+        // If multipart failed through reverse proxy/CDN, fallback to base64
+        if (file.size < 10 * 1024 * 1024) {
+            const base64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            return await api.post<any>('/uploads/image', { file: base64 });
+        }
+        throw err;
+    }
 };
 
 // Reviews
