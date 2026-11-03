@@ -8,7 +8,7 @@
     { "source": "/login", "has": [{ "type": "query", "key": "action", "value": "logout" }], "destination": "/", "permanent": false }
   ],
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://airion-backend-m3tb.onrender.com/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://airion-api.onrender.com/api/:path*" },
     { "source": "/vendor/assets/:file*", "destination": "/vendor/assets/:file*" },
     { "source": "/admin/assets/:file*", "destination": "/admin/assets/:file*" },
     { "source": "/vendor/", "destination": "/vendor/index.html" },
