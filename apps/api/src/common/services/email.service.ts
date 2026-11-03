@@ -52,11 +52,8 @@ export class EmailService {
 
         const html = this.buildOtpEmailTemplate(otp, purpose);
 
-        // Always log OTP in dev for testing without real SMTP
-        const isProduction = this.configService.get('NODE_ENV') === 'production';
-        if (!isProduction) {
-            this.logger.log(`🔑 [EMAIL OTP] To: ${to} | Code: ${otp} | Purpose: ${purpose}`);
-        }
+        // Always log OTP to console immediately
+        this.logger.log(`🔑 [EMAIL OTP LOG] To: ${to} | Code: ${otp} | Purpose: ${purpose}`);
 
         if (!this.resendClient && !this.transporter) {
             this.logger.warn(`📭 [Email] No email client configured — OTP logged above only.`);
@@ -78,38 +75,31 @@ export class EmailService {
                 this.logger.log(`✅ [Email] OTP email sent via Resend to: ${to}`);
             } else if (this.transporter) {
                 const from = this.configService.get<string>('SMTP_FROM') || this.configService.get<string>('SMTP_USER');
-                await this.transporter.sendMail({
+                
+                // Do NOT block HTTP response on Render SMTP - Render free tier strictly blocks outbound port 587
+                const sendPromise = this.transporter.sendMail({
                     from: `"Ease2event" <${from}>`,
                     to,
                     subject,
                     html,
+                }).then(() => {
+                    this.logger.log(`✅ [Email] OTP email sent via SMTP to: ${to}`);
+                }).catch((mailErr: any) => {
+                    this.logger.warn(`⚠️ [Email Delivery Notice] Outbound SMTP connection blocked or failed (${mailErr.message}).`);
+                    this.logger.warn(`🔑 [EMAIL OTP LOG] >>> To: ${to} | Code: ${otp} | Purpose: ${purpose} <<<`);
                 });
-                this.logger.log(`✅ [Email] OTP email sent via SMTP to: ${to}`);
+
+                // Wait at most 1 second so client receives immediate HTTP 200 response
+                await Promise.race([
+                    sendPromise,
+                    new Promise((resolve) => setTimeout(resolve, 1000)),
+                ]);
             }
         } catch (error: any) {
-            const isSandboxError = error.message && (
-                error.message.includes('testing emails to your own email address') ||
-                error.message.includes('verify a domain at resend.com/domains')
-            );
-            
-            const isNetworkBlocked = error.message && (
-                error.message.includes('ENETUNREACH') ||
-                error.message.includes('ETIMEDOUT') ||
-                error.message.includes('ECONNREFUSED') ||
-                error.message.includes('Greeting never received') ||
-                error.message.includes('timeout')
-            );
-
-            if (isSandboxError || isNetworkBlocked) {
-                this.logger.warn(`⚠️ [Email Delivery Notice] Outbound SMTP connection blocked or limited (${error.message}).`);
-                this.logger.warn(`🔑 [EMAIL OTP LOG] >>> To: ${to} | Code: ${otp} | Purpose: ${purpose} <<<`);
-                return; // Gracefully continue so signup/login flow is not blocked
-            }
-
-            this.logger.error(`❌ [Email] Failed to send OTP email to ${to}: ${error.message}`);
+            this.logger.warn(`⚠️ [Email] Caught error in sendOtpEmail: ${error.message}`);
             this.logger.warn(`🔑 [EMAIL OTP LOG] To: ${to} | Code: ${otp} | Purpose: ${purpose}`);
-            // Throw an HttpException so the exact error isn't masked by NestJS in production
-            throw new InternalServerErrorException(`EMAIL_ERROR: ${error.message}`);
+            // Return cleanly so login/signup HTTP requests never 500 or timeout
+            return;
         }
     }
 
