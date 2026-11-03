@@ -77,8 +77,13 @@ export class AuthService {
                 // Replace escaped newlines with actual newlines and normalize double-escaped chars
                 formattedPrivateKey = formattedPrivateKey.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\'/g, "'").trim();
                 
-                // Fix spacing/formatting if it's on a single line without explicit \n
-                if (!formattedPrivateKey.includes('\n')) {
+                // If user omitted -----BEGIN PRIVATE KEY----- / -----END PRIVATE KEY-----, add them automatically
+                if (!formattedPrivateKey.includes('BEGIN PRIVATE KEY')) {
+                    const cleanKey = formattedPrivateKey.replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
+                    const chunks = cleanKey.match(/.{1,64}/g) || [cleanKey];
+                    formattedPrivateKey = `-----BEGIN PRIVATE KEY-----\n${chunks.join('\n')}\n-----END PRIVATE KEY-----\n`;
+                } else if (!formattedPrivateKey.includes('\n')) {
+                    // Fix spacing/formatting if it's on a single line without explicit \n
                     formattedPrivateKey = formattedPrivateKey.replace('-----BEGIN PRIVATE KEY-----', '-----BEGIN PRIVATE KEY-----\n');
                     formattedPrivateKey = formattedPrivateKey.replace('-----END PRIVATE KEY-----', '\n-----END PRIVATE KEY-----\n');
                     
