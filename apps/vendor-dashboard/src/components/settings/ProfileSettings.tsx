@@ -248,7 +248,9 @@ const ProfileSettings: React.FC = () => {
                   toast.error('Failed to get uploaded image URL', { id: loaderId });
                 }
               } catch (err: any) {
-                toast.error(err?.message || 'Upload failed', { id: loaderId });
+                console.error('[Upload Debug]:', err);
+                const errorMsg = err?.error || err?.response?.data?.message || err?.message || 'Upload failed';
+                toast.error(errorMsg, { id: loaderId });
               } finally {
                 e.target.value = '';
               }
