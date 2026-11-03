@@ -121,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   <NavLink to="/settings?tab=profile" onClick={() => window.innerWidth < 768 && onClose()} className="flex items-center gap-3 p-3 rounded-xl bg-[var(--ease2event-bg-surface)] border border-[var(--ease2event-border-subtle)] hover:bg-[var(--ease2event-bg-elevated)] transition-colors cursor-pointer">
   <Avatar
-  src={user?.vendor?.logo}
+  src={user?.vendor?.logo || (user as any)?.avatar}
   name={getDisplayName(user)}
   size="md"
   />

@@ -97,7 +97,11 @@ export class UploadsService {
       const localFilePath = path.join(localDir, fileName);
       fs.writeFileSync(localFilePath, file.buffer);
 
-      const backendUrl = (this.configService.get<string>('BACKEND_URL') || '').trim();
+      const backendUrl = (
+          this.configService.get<string>('RENDER_EXTERNAL_URL') ||
+          this.configService.get<string>('BACKEND_URL') ||
+          (process.env.NODE_ENV === 'production' ? 'https://airion-api.onrender.com' : '')
+      )?.trim();
       const port = this.configService.get<string>('PORT') || '3000';
       const baseUrl = backendUrl || `http://localhost:${port}`;
       const fullUrl = `${baseUrl}/uploads/${fileName}`;

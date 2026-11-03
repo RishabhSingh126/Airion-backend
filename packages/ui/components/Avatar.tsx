@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User } from 'lucide-react';
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -22,6 +22,10 @@ const sizeMap: Record<AvatarSize, { container: string; text: string }> = {
 /** Derives 1–2 letter initials from name, email, or phone */
 function getInitials(name?: string | null, phoneNumber?: string | null): string {
   if (name) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2 && parts[0][0] && parts[1][0]) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
     return name.trim()[0]?.toUpperCase() ?? '?';
   }
   if (phoneNumber) {
@@ -40,28 +44,40 @@ export const Avatar = ({
 }: AvatarProps) => {
   const { container, text } = sizeMap[size];
   const initials = getInitials(name, phoneNumber);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
+
+  // Clean and normalize src URL (rewrite accidental localhost to production Render API)
+  let resolvedSrc = src?.trim();
+  if (resolvedSrc && (resolvedSrc.startsWith('http://localhost:') || resolvedSrc.startsWith('http://127.0.0.1:'))) {
+    resolvedSrc = resolvedSrc.replace(/^http:\/\/(localhost|127\.0\.0\.1):\d+/, 'https://airion-api.onrender.com');
+  }
+
+  const hasImage = Boolean(resolvedSrc && !imgError);
 
   return (
     <div
       className={[
         container,
-        'rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden',
-        'bg-gradient-to-br from-[var(--ease2event-brand-primary)] to-[var(--ease2event-brand-secondary)]',
+        'rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden relative select-none',
+        hasImage ? 'bg-slate-100 dark:bg-slate-800' : 'bg-gradient-to-br from-[var(--ease2event-brand-primary,#FF385C)] to-[var(--ease2event-brand-secondary,#E00B41)]',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
-      {src ? (
+      {hasImage ? (
         <img
-          src={src}
+          src={resolvedSrc!}
           alt={name ?? 'avatar'}
           className="w-full h-full object-cover"
-          onError={(e) => {
-            // fallback to initials on broken image
-            (e.currentTarget as HTMLImageElement).style.display = 'none';
-          }}
+          onError={() => setImgError(true)}
         />
+      ) : initials !== '?' ? (
+        <span className={`${text} font-bold text-white select-none leading-none`}>{initials}</span>
       ) : (
         <User className="text-white w-1/2 h-1/2" />
       )}

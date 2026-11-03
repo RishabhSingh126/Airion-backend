@@ -157,7 +157,7 @@ const Topbar: React.FC<TopbarProps> = ({ title, onMenuClick }) => {
  className={`flex items-center gap-2 md:gap-4 cursor-pointer hover:bg-[rgba(108,99,255,0.05)] p-1.5 md:pr-3 rounded-xl transition-all ${isProfileOpen ? 'bg-[rgba(108,99,255,0.05)]' : ''}`}
  >
  <Avatar
- src={user?.vendor?.logo}
+ src={user?.vendor?.logo || (user as any)?.avatar}
  name={getDisplayName(user)}
  size="sm"
  />

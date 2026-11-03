@@ -93,6 +93,7 @@ async function bootstrap() {
         fs.mkdirSync(uploadsDir, { recursive: true });
     }
     app.use('/uploads', express.static(uploadsDir));
+    app.use('/api/uploads', express.static(uploadsDir));
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ limit: '50mb', extended: true }));
 

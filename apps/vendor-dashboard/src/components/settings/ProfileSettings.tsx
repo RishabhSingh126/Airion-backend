@@ -91,11 +91,16 @@ const ProfileSettings: React.FC = () => {
 
   useEffect(() => {
     if (user) {
+      let initialAvatar = (user as any).avatar || user.vendor?.logo || '';
+      if (initialAvatar && initialAvatar.startsWith('http://localhost:')) {
+        initialAvatar = initialAvatar.replace(/^http:\/\/localhost:\d+/, 'https://airion-api.onrender.com');
+      }
+
       setPersonalData({
         name: (user.name && user.name.startsWith('User ') && user.name.includes('@')) ? (user.vendor?.businessName || '') : (user.name || user.vendor?.businessName || ''),
         email: user.email || '',
         phone: user.phoneNumber || user.vendor?.businessPhone || '',
-        profileImage: (user as any).avatar || user.vendor?.logo || '',
+        profileImage: initialAvatar,
         aadharNumber: user.vendor?.aadharNumber || '',
         panNumber: user.vendor?.panNumber || '',
         gstNumber: user.vendor?.gstNumber || ''
@@ -234,18 +239,77 @@ const ProfileSettings: React.FC = () => {
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
+
+              // 1. Instant local preview
+              const rawDataUrl = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve((reader.result as string) || '');
+                reader.onerror = () => resolve('');
+                reader.readAsDataURL(file);
+              });
+
+              if (rawDataUrl) {
+                setPersonalData(prev => ({ ...prev, profileImage: rawDataUrl }));
+              }
+
               const loaderId = toast.loading('Uploading profile picture...');
               try {
-                const data = await uploadImage(file);
-                const imageUrl = data.url || data.data?.url || (typeof data === 'string' ? data : null);
-                if (imageUrl) {
-                  setPersonalData(prev => ({ ...prev, profileImage: imageUrl }));
-                  // Auto-save the avatar directly so it persists immediately
-                  await api.patch('/auth/profile', { avatar: imageUrl });
+                // 2. Client-side canvas resize (400x400 JPEG, ~35KB) for 100% persistence in DB
+                let optimizedDataUrl = rawDataUrl;
+                try {
+                  const img = new Image();
+                  optimizedDataUrl = await new Promise<string>((resolve) => {
+                    img.onload = () => {
+                      const canvas = document.createElement('canvas');
+                      const maxDim = 400;
+                      let { width, height } = img;
+                      if (width > height && width > maxDim) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                      } else if (height > maxDim) {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                      }
+                      canvas.width = width;
+                      canvas.height = height;
+                      const ctx = canvas.getContext('2d');
+                      if (ctx) {
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.88));
+                      } else {
+                        resolve(rawDataUrl);
+                      }
+                    };
+                    img.onerror = () => resolve(rawDataUrl);
+                    img.src = rawDataUrl;
+                  });
+                } catch (e) {
+                  console.warn('Canvas optimization fallback:', e);
+                }
+
+                // 3. Upload to server
+                let remoteUrl: string | null = null;
+                try {
+                  const data = await uploadImage(file);
+                  remoteUrl = data.url || data.data?.url || (typeof data === 'string' ? data : null);
+                  if (remoteUrl && remoteUrl.startsWith('http://localhost:')) {
+                    remoteUrl = remoteUrl.replace(/^http:\/\/localhost:\d+/, 'https://airion-api.onrender.com');
+                  }
+                } catch (uploadErr) {
+                  console.warn('Cloud upload failed, falling back to persistent data URL:', uploadErr);
+                }
+
+                // Use remoteUrl if valid and not localhost, otherwise use persistent optimizedDataUrl
+                const finalImageUrl = remoteUrl || optimizedDataUrl;
+
+                if (finalImageUrl) {
+                  setPersonalData(prev => ({ ...prev, profileImage: finalImageUrl }));
+                  // Save directly to user profile in database
+                  await api.patch('/auth/profile', { avatar: finalImageUrl });
                   refreshUser();
                   toast.success('Profile picture updated and saved!', { id: loaderId });
                 } else {
-                  toast.error('Failed to get uploaded image URL', { id: loaderId });
+                  toast.error('Failed to process image', { id: loaderId });
                 }
               } catch (err: any) {
                 console.error('[Upload Debug]:', err);
