@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://ease2event.com/sitemap.xml
