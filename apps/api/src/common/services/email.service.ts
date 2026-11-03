@@ -92,13 +92,22 @@ export class EmailService {
                 error.message.includes('verify a domain at resend.com/domains')
             );
             
-            if (isSandboxError) {
-                this.logger.warn(`⚠️ [Resend Sandbox Restriction] Unable to send email to ${to}. Please retrieve the OTP code from this log:`);
-                this.logger.warn(`🔑 [EMAIL OTP LOG] To: ${to} | Code: ${otp} | Purpose: ${purpose}`);
+            const isNetworkBlocked = error.message && (
+                error.message.includes('ENETUNREACH') ||
+                error.message.includes('ETIMEDOUT') ||
+                error.message.includes('ECONNREFUSED') ||
+                error.message.includes('Greeting never received') ||
+                error.message.includes('timeout')
+            );
+
+            if (isSandboxError || isNetworkBlocked) {
+                this.logger.warn(`⚠️ [Email Delivery Notice] Outbound SMTP connection blocked or limited (${error.message}).`);
+                this.logger.warn(`🔑 [EMAIL OTP LOG] >>> To: ${to} | Code: ${otp} | Purpose: ${purpose} <<<`);
                 return; // Gracefully continue so signup/login flow is not blocked
             }
 
             this.logger.error(`❌ [Email] Failed to send OTP email to ${to}: ${error.message}`);
+            this.logger.warn(`🔑 [EMAIL OTP LOG] To: ${to} | Code: ${otp} | Purpose: ${purpose}`);
             // Throw an HttpException so the exact error isn't masked by NestJS in production
             throw new InternalServerErrorException(`EMAIL_ERROR: ${error.message}`);
         }
